@@ -1,7 +1,7 @@
 language: python
 
 addons:
-  firefox: "57.0"
+  firefox: "latest"
   postgresql: "9.5"
 
 services:
