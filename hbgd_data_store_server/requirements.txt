@@ -10,7 +10,7 @@ django-extensions==1.7.5
 django-tables2==1.2.6
 factory_boy==2.8.1
 pandas==0.18.1
-psycopg2==2.6.2
+psycopg2==2.7.1
 pytest==3.0.5
 pytest-cov==2.4.0
 pytest-django==3.1.2

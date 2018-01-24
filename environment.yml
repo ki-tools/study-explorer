@@ -8,7 +8,7 @@ dependencies:
   - bokeh ==0.12.3
   - colorcet ==0.9.1
   - Django ==1.10.5
-  - psycopg2 ==2.6.2
+  - psycopg2 ==2.7.1
   - pytest ==3.0.5
   - pytest-cov ==2.4.0
   - pandas ==0.18.1
