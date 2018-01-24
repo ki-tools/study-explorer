@@ -17,8 +17,8 @@ matrix:
     env: USE_PIP=true
 
 before_script:
-  - wget https://github.com/mozilla/geckodriver/releases/download/v0.11.1/geckodriver-v0.11.1-linux64.tar.gz
-  - tar -xvzf geckodriver-v0.11.1-linux64.tar.gz
+  - wget https://github.com/mozilla/geckodriver/releases/download/v0.19.1/geckodriver-v0.19.1-linux64.tar.gz
+  - tar -xvzf geckodriver-v0.19.1-linux64.tar.gz
   - chmod +x geckodriver && sudo mv geckodriver /usr/local/bin
   # reference travis docs
   - export DISPLAY=:99.0
