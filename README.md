@@ -1,6 +1,6 @@
 # hbgd-data-store-server
-[![Build Status](https://travis-ci.com/ContinuumIO/hbgd-data-store-server.svg?token=e99xQta9RGMTxjpudRgm&branch=master)](https://travis-ci.com/ContinuumIO/hbgd-data-store-server)
-[![Coverage Status](https://coveralls.io/repos/github/ContinuumIO/hbgd-data-store-server/badge.svg?t=NUhb53)](https://coveralls.io/github/ContinuumIO/hbgd-data-store-server)
+[![Build Status](https://travis-ci.org/pcstout/study-explorer.svg?branch=master)](https://travis-ci.org/pcstout/study-explorer)
+[![Coverage Status](https://coveralls.io/repos/github/pcstout/study-explorer/badge.svg?branch=master)](https://coveralls.io/github/pcstout/study-explorer?branch=master)
 
 
 A server for deploying the data catalogue
