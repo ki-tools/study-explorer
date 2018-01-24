@@ -1,0 +1,14 @@
+INSERT INTO studies_domain (code, label, is_qualifier) VALUES ('SUBJ', 'Subject Level Data', false);
+INSERT INTO studies_domain (code, label, is_qualifier) VALUES ('PREGHX', 'Pregnancy History', false);
+INSERT INTO studies_domain (code, label, is_qualifier) VALUES ('RANTHRO', 'Relatives Anthropometry', false);
+INSERT INTO studies_domain (code, label, is_qualifier) VALUES ('PARENTS', 'Parents', false);
+INSERT INTO studies_domain (code, label, is_qualifier) VALUES ('QS', 'Questionnaire Results', false);
+INSERT INTO studies_domain (code, label, is_qualifier) VALUES ('MB', 'Microbiology', false);
+INSERT INTO studies_domain (code, label, is_qualifier) VALUES ('ANTHRO', 'Anthropometry', false);
+INSERT INTO studies_domain (code, label, is_qualifier) VALUES ('*SPEC', 'Specimen', true);
+INSERT INTO studies_domain (code, label, is_qualifier) VALUES ('AGECAT', 'Age Category', true);
+INSERT INTO studies_domain (code, label, is_qualifier) VALUES ('RELTIVE', 'Relative', true);
+INSERT INTO studies_domain (code, label, is_qualifier) VALUES ('VS', 'Vital Signs', false);
+INSERT INTO studies_domain (code, label, is_qualifier) VALUES ('NT', 'Nutrition', false);
+INSERT INTO studies_domain (code, label, is_qualifier) VALUES ('LB', 'Laboratory', false);
+INSERT INTO studies_domain (code, label, is_qualifier) VALUES ('SS', 'Socioeconomic Status', false);

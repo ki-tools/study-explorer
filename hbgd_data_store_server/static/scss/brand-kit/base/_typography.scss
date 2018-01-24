@@ -1,0 +1,219 @@
+*:focus,
+.focus {
+  border-bottom: rem-calc(1) solid transparent;
+  outline: rem-calc(1) solid $black20;
+}
+
+h1 {
+  line-height: rem-calc(50);
+}
+
+h2 {
+  line-height: rem-calc(44);
+}
+
+h3 {
+  line-height: rem-calc(42);
+}
+
+h4 {
+  line-height: rem-calc(34);
+}
+
+h5 {
+  line-height: rem-calc(36);
+}
+
+.external-link,
+.more-link {
+  white-space: nowrap;
+
+  &::after {
+    display: inline-block;
+    margin-left: rem-calc(4);
+    content: "";
+    font-family: FontAwesome;
+    font-size: rem-calc(10);
+    line-height: 0.5;
+  }
+}
+
+.external-link {
+  &::after {
+    content: "";
+  }
+}
+
+.more-link {
+  &::after {
+    content: "";
+  }
+}
+
+ul,
+ol {
+  padding: rem-calc(5 0);
+}
+
+p {
+  a {
+    border-bottom: rem-calc(1) dotted $brand-secondary-alt2;
+
+    &:hover,
+    &:focus {
+      color: $anchor-font-color-hover;
+    }
+
+    &:hover {
+      color: $anchor-font-color-hover;
+      border-bottom: rem-calc(1) dotted $anchor-font-color-hover;
+    }
+  }
+}
+
+.main-headline {
+  font-weight: $font-weight-bold;
+  text-transform: uppercase;
+}
+
+.secondary-headline {
+  font-weight: $font-weight-light;
+}
+
+.subhead {
+  font-weight: $font-weight-normal;
+}
+
+.technical-copy {
+  font-family: $font-family-serif;
+  font-size: rem-calc(14);
+}
+
+// Deprecated - use Foundation Utility classes instead
+// http://foundation.zurb.com/sites/docs/v/5.5.3/utility-classes.html
+.centered-copy {
+  text-align: center;
+}
+
+// Font colors
+.brand-primary-copy {
+  color: $brand-primary;
+}
+
+.brand-primary-alt1-copy {
+  color: $brand-primary-alt1;
+}
+
+.brand-secondary-copy {
+  color: $brand-secondary;
+}
+
+.brand-secondary-alt1-copy {
+  color: $brand-secondary-alt1;
+}
+
+// Helper class. This is the default text color.
+.brand-gray1-copy {
+  color: $brand-gray1;
+}
+
+.brand-gray2-copy {
+  color: $brand-gray2;
+}
+
+.brand-tertiary1-copy {
+  color: $brand-tertiary1;
+}
+
+.brand-tertiary2-copy {
+  color: $brand-tertiary2;
+}
+
+.brand-tertiary3-copy {
+  color: $brand-tertiary3;
+}
+
+.brand-tertiary4-copy {
+  color: $brand-tertiary4;
+}
+
+.light-on-dark-copy {
+  color: $white;
+
+  a {
+    color: $brand-secondary-alt2;
+
+    &:hover,
+    &:focus {
+      color: lighten($brand-secondary-alt2, 10%);
+      border-bottom: rem-calc(1) dotted lighten($brand-secondary-alt2, 10%);
+    }
+  }
+}
+
+.quote {
+  font-style: italic;
+}
+
+blockquote {
+  @extend .quote;
+
+  position: relative;
+  padding-bottom: rem-calc(20);
+  color: $black70;
+  border: 0;
+
+  &::before {
+    position: absolute;
+    top: 0;
+    left: rem-calc(-15px);
+    display: block;
+    content: "\f10d";
+    color: $brand-secondary;
+    font-family: FontAwesome;
+    font-size: 150%;
+  }
+}
+
+sub,
+sup {
+  font-size: 60%;
+}
+
+mark {
+  background: $brand-secondary-alt2;
+}
+
+// Styles for code examples / documentation
+code {
+  color: $black60;
+  border: 0;
+  background: $black05;
+}
+
+pre {
+  padding: rem-calc(10);
+  border: rem-calc(1) solid $black20;
+  background: $black05;
+
+  code {
+    display: block;
+    width: 100%;
+    padding: rem-calc(5);
+  }
+}
+
+.cli {
+  padding: rem-calc(10);
+  color: $white;
+  border: rem-calc(1) solid $black;
+  background: $black;
+
+  code {
+    display: block;
+    width: 100%;
+    padding: rem-calc(5);
+    color: $white;
+    background: $black;
+  }
+}

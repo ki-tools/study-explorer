@@ -1,0 +1,33 @@
+.tile {
+  border: 1px solid $black20;
+  background: $white;
+
+  img {
+    display: block;
+    height: rem-calc(220);
+    margin: 0 auto;
+  }
+}
+
+.tile-link {
+  position: relative;
+
+  a {
+    display: block;
+    padding: 10px;
+    font-weight: bold;
+    border-top: 1px solid $black20;
+
+    &::before {
+      position: absolute;
+      top: rem-calc(-40);
+      right: 0;
+      padding: rem-calc(5px 10);
+      content: "\f101";
+      color: $white;
+      font-family: "FontAwesome";
+      font-size: rem-calc(20);
+      background: $brand-secondary;
+    }
+  }
+}

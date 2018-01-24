@@ -1,0 +1,9 @@
+[run]
+branch = True
+omit =
+  # omit test files
+  */tests/*
+  # omit migration files
+  */migrations/*
+  # omit __init__ files
+  */__init__.py

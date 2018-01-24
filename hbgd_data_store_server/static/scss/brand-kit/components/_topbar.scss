@@ -1,0 +1,27 @@
+.top-bar {
+  min-height: rem-calc(80);
+  padding: rem-calc(12) 0;
+  border-bottom: 1px solid $black10;
+
+  .right {
+    padding-right: rem-calc(12);
+  }
+
+  .button {
+    top: 0;
+    height: auto;
+    padding-top: rem-calc(16);
+    padding-bottom: rem-calc(16);
+    font-size: inherit;
+  }
+}
+
+.top-bar-section {
+  ul li {
+    margin: rem-calc(4);
+
+    > a {
+      font-size: inherit;
+    }
+  }
+}

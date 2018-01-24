@@ -1,0 +1,24 @@
+INSERT INTO studies_filter (label, study_field_id, domain_id, widget, widget_json) VALUES ('Subject Level Data', NULL, (SELECT id FROM studies_domain WHERE code = 'SUBJ'), 'checkbox', '{}');
+INSERT INTO studies_filter (label, study_field_id, domain_id, widget, widget_json) VALUES ('Pregnancy History', NULL, (SELECT id FROM studies_domain WHERE code = 'PREGHX'), 'checkbox', '{}');
+INSERT INTO studies_filter (label, study_field_id, domain_id, widget, widget_json) VALUES ('Relatives Anthropometry', NULL, (SELECT id FROM studies_domain WHERE code = 'RANTHRO'), 'checkbox', '{}');
+INSERT INTO studies_filter (label, study_field_id, domain_id, widget, widget_json) VALUES ('Parents', NULL, (SELECT id FROM studies_domain WHERE code = 'PARENTS'), 'checkbox', '{}');
+INSERT INTO studies_filter (label, study_field_id, domain_id, widget, widget_json) VALUES ('Questionnaire Results', NULL, (SELECT id FROM studies_domain WHERE code = 'QS'), 'checkbox', '{}');
+INSERT INTO studies_filter (label, study_field_id, domain_id, widget, widget_json) VALUES ('Microbiology', NULL, (SELECT id FROM studies_domain WHERE code = 'MB'), 'checkbox', '{}');
+INSERT INTO studies_filter (label, study_field_id, domain_id, widget, widget_json) VALUES ('Anthropometry', NULL, (SELECT id FROM studies_domain WHERE code = 'ANTHRO'), 'checkbox', '{}');
+INSERT INTO studies_filter (label, study_field_id, domain_id, widget, widget_json) VALUES ('Specimen', NULL, (SELECT id FROM studies_domain WHERE code = '*SPEC'), 'checkbox', '{}');
+INSERT INTO studies_filter (label, study_field_id, domain_id, widget, widget_json) VALUES ('Age Category', NULL, (SELECT id FROM studies_domain WHERE code = 'AGECAT'), 'discrete slider', '{"grid": true}');
+INSERT INTO studies_filter (label, study_field_id, domain_id, widget, widget_json) VALUES ('Relative', NULL, (SELECT id FROM studies_domain WHERE code = 'RELTIVE'), 'checkbox', '{}');
+INSERT INTO studies_filter (label, study_field_id, domain_id, widget, widget_json) VALUES ('Vital Signs', NULL, (SELECT id FROM studies_domain WHERE code = 'VS'), 'checkbox', '{}');
+INSERT INTO studies_filter (label, study_field_id, domain_id, widget, widget_json) VALUES ('Nutrition', NULL, (SELECT id FROM studies_domain WHERE code = 'NT'), 'checkbox', '{}');
+INSERT INTO studies_filter (label, study_field_id, domain_id, widget, widget_json) VALUES ('Laboratory', NULL, (SELECT id FROM studies_domain WHERE code = 'LB'), 'checkbox', '{}');
+INSERT INTO studies_filter (label, study_field_id, domain_id, widget, widget_json) VALUES ('Data Status', 'Data_Status', NULL, 'checkbox', '{}');
+INSERT INTO studies_filter (label, study_field_id, domain_id, widget, widget_json) VALUES ('Intervention Type', 'Intervention_Type', NULL, 'checkbox', '{}');
+INSERT INTO studies_filter (label, study_field_id, domain_id, widget, widget_json) VALUES ('Country', 'Country', NULL, 'checkbox', '{}');
+INSERT INTO studies_filter (label, study_field_id, domain_id, widget, widget_json) VALUES ('Start Year', 'Start_Year', NULL, 'double slider', '{}');
+INSERT INTO studies_filter (label, study_field_id, domain_id, widget, widget_json) VALUES ('Stop Year', 'Stop_Year', NULL, 'double slider', '{}');
+INSERT INTO studies_filter (label, study_field_id, domain_id, widget, widget_json) VALUES ('Study Type', 'Study_Type', NULL, 'checkbox', '{}');
+INSERT INTO studies_filter (label, study_field_id, domain_id, widget, widget_json) VALUES ('Socioeconomic Status', NULL, (SELECT id FROM studies_domain WHERE code = 'SS'), 'checkbox', '{}');
+INSERT INTO studies_filter (label, study_field_id, domain_id, widget, widget_json) VALUES ('Study ID', 'Study_ID', NULL, 'checkbox', '{}');
+INSERT INTO studies_filter (label, study_field_id, domain_id, widget, widget_json) VALUES ('Enrollment Age Lower Limit', 'Age_Lower_Limit', NULL, 'discrete slider', '{"grid": true}');
+INSERT INTO studies_filter (label, study_field_id, domain_id, widget, widget_json) VALUES ('Enrollment Age Upper Limit', 'Age_Upper_Limit', NULL, 'discrete slider', '{"grid": true}');
+

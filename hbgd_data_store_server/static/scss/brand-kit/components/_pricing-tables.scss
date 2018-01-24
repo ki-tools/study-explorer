@@ -1,0 +1,28 @@
+.pricing-table {
+  padding: 0;
+
+  .title,
+  .description,
+  .pricing-details,
+  .pricing-support {
+    position: relative;
+  }
+
+  .title,
+  .description,
+  .pricing-support {
+    min-height: rem-calc(120);
+  }
+
+  .pricing-details {
+    min-height: rem-calc(280);
+  }
+
+  .cta-button {
+    padding: 0;
+
+    .button {
+      margin: 0;
+    }
+  }
+}

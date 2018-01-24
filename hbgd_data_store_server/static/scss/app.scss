@@ -1,0 +1,185 @@
+@import "settings";
+@import "foundation/components/global";
+@import "foundation/components/type";
+
+@import "foundation/components/accordion";
+@import "foundation/components/block-grid";
+@import "foundation/components/buttons";
+@import "foundation/components/button-groups";
+@import "foundation/components/grid";
+@import "foundation/components/inline-lists";
+@import "foundation/components/forms";
+@import "foundation/components/offcanvas";
+@import "foundation/components/pagination";
+@import "foundation/components/panels";
+@import "foundation/components/side-nav";
+@import "foundation/components/switches";
+@import "foundation/components/tabs";
+@import "foundation/components/tables";
+@import "foundation/components/top-bar";
+
+@import "../bower_components/jquery-ui/themes/base/jquery-ui.css";
+
+$font-weight-light: 100 !default;
+
+@import "font-awesome/font-awesome";
+
+//@import "brand-kit/settings/brand-colors";
+//@import "brand-kit/settings/grayscale";
+//@import "brand-kit/base/typography";
+//@import "brand-kit/components/buttons";
+//@import "brand-kit/layout/global";
+
+@import "sidebar";
+.row {
+  max-width: none;
+}
+.sidebar, .panel {
+  h1,h2,h3,h4,h5,h6 {
+    padding: 4px 0px;
+    font-weight: bold;
+  }
+}
+#sidebar-minimize {
+  position: absolute;
+  top: 8px;
+  right: 25px;
+}
+
+.control-label {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+.switch.multi {
+  margin-bottom: 8px;
+}
+.switch-label {
+  margin-left: 4px;
+}
+
+.control-group {
+  padding: 5px;
+  background-color: white;
+  margin-bottom: 15px;
+  border: 1px #d8d8d8 solid;
+  padding: 10px;
+}
+
+.control-group-items {
+  max-height: 150px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  padding: 10px;
+}
+
+.applied-filters {
+  @extend fieldset;
+  padding-top: 0;
+  h6 {
+    @extend legend;
+    margin-top: -1em;
+    background-color: $panel-bg-color;
+    float: left;
+    padding-left: 0.1875em;
+    padding-right: 0.1875em;
+  }
+  .panel {
+    margin-top: 2em;
+    margin-bottom: 0;
+  }
+  .summary {
+    padding-bottom: 1.25rem;
+  }
+}
+
+.buffer {
+  margin-top: 3em;
+}
+
+ul.pagination li:hover a.disabled {
+  background: none;
+}
+ul.pagination li a.disabled {
+  color: #d8d8d8;
+  cursor: default;
+}
+
+.disabled {
+  color: #d8d8d8;
+}
+
+.dataframe {
+  border: inherit;
+  border-spacing: 0px;
+}
+
+table.dataframe tbody tr td {
+  text-align: right;
+}
+
+.button-group li > input, .tabs .tab-title > a{
+  outline: none;
+}
+
+.study-explorer .accordion .accordion-navigation > .content {
+  padding-top: 0;
+}
+
+.domain-filter-table {
+  width: 100%
+}
+
+
+#sticky-menu {
+  @extend fieldset;
+  z-index: 100;
+  background: #FAFAFA;
+  color: lightgray;
+  &.is_stuck {
+    margin-top: 0;
+  }
+  &.alert {
+    background: #f2dede;
+    border-color: #ebccd1;
+    #message-bar {
+      color: #a94442;
+    }
+    #submit-id-apply.button {
+      background-color: #a94442; 
+      color: white;
+    }
+  }
+  .button {
+    margin: 0;
+  }
+}
+
+.study-counts-inactive {
+  color: lightgray;
+}
+
+.bk-root .bk-annotation {
+  color: pink;
+  white-space: nowrap;
+}
+
+.summary-plot {
+  overflow-x: auto;
+  margin-bottom: 25px;
+  padding: 15px;
+  border: 3px #d8d8d8 dashed;
+  border-radius: 3px;
+}
+
+.plot-wrapper {
+ @extend .summary-plot;
+ max-height: 600px;
+ overflow-y: auto;
+ margin-top: 0;
+}
+
+.tabs-content {
+  width: 78%;
+  float: left;
+  margin-left: 1em;
+}

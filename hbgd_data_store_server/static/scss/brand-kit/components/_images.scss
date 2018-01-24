@@ -1,0 +1,26 @@
+.logo {
+  min-width: rem-calc(140);
+  padding: rem-calc(20);
+}
+
+.image-link {
+  display: block;
+
+  &:hover {
+    border-bottom: 1px solid transparent;
+  }
+
+  // Don't display the new window icon for image links
+  &[target="_blank"]::after {
+    display: none;
+  }
+}
+
+figure {
+  margin: 0;
+}
+
+figcaption {
+  padding: rem-calc(10 0);
+  text-align: center;
+}

@@ -1,0 +1,21 @@
+{% load crispy_forms_field %}
+
+{% if field.is_hidden %}
+  {{ field }}
+{% else %}
+  <div id="div_{{ field.auto_id }}" class="holder{% if wrapper_class %} {{ wrapper_class }}{% endif %}{% if field.errors and form_show_errors %} error{% endif %}{% if field|is_checkbox %} checkbox{% endif %}{% if field.css_classes %} {{ field.css_classes }}{% endif %}">{% spaceless %}
+	{% if field|is_checkboxselectmultiple %}
+      {% include 'forms/domain-checkbox.html' %}
+    {% endif %}
+	{% if form_show_errors %}
+      {% for error in field.errors %}
+        <small id="error_{{ forloop.counter }}_{{ field.auto_id }}" class="error">
+          {{ error }}
+        </small>
+      {% endfor %}
+    {% endif %}
+    {% if field.help_text %}
+      <div id="hint_{{ field.auto_id }}" class="hint">{{ field.help_text|safe }}</div>
+    {% endif %}
+  {% endspaceless %}</div>
+{% endif %}

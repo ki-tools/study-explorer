@@ -1,0 +1,55 @@
+{% extends "admin/change_form.html" %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">Home</a>
+&rsaquo; <a href="{% url 'admin:app_list' app_label='studies' %}">Studies</a>
+&rsaquo; Import IDX Files
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="row buffer">
+  <div class="columns">
+    <div class="columns">
+      <div>
+        <h2 class="secondary-headline">IDX File Formatting</h2>
+        <p>
+          Each IDX file name must match the regular expression <code>r"^IDX_(\w*).csv"</code>,
+          with the search pattern matching the code for an <b>already existing</b> domain.
+          E.g. the IDX file for the domain with a code equal to LB would be named IDX_LB.csv.
+        </p>
+        <p>
+          IDX files are parsed for columns with names with suffixes of domain name, code
+          and category columns (e.g. LB domain columns are LBTEST, LBTESTCD and LBCAT):
+          <ul class="inline-list">
+            <li class="left">'{domain code}TEST' : The domain variable name</li>
+            <li class="left">'{domain code}TESTCD' : The domain variable code</li>
+            <li class="left">'{domain code}CAT' : The domain variable category code</li>
+          </ul>
+        </p>
+        <p>
+          Acceptable values for missing csv values are:
+          <ul class="inline-list">
+            <li class="left">NaN</li>
+            <li class="left">None</li>
+            <li class="left">9999</li>
+            <li class="left">"." (a period character)</li>
+          </ul>
+        </p>
+      </div>
+    <h2 class="secondary-headline">Import IDX Files</h2>
+    <p class="errornote">Processing of IDX files can take a while - please allow a few minutes for process to finish.</p>
+    <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="submit-row">
+					<input class="default" type="submit" value="Submit" />
+					<p class="deletelink-box">
+						<a class="deletelink" href="{% url 'admin:studies_count_changelist' %}">Cancel</a>
+					</p>
+        </div>
+    </form>
+  </div>
+</div>
+{% endblock content %}

@@ -1,0 +1,46 @@
+{% extends 'content.html' %}
+{% load django_tables2 crispy_forms_tags static %}
+
+{% block content %}
+<div class="row">
+  <div class="small-4 columns">
+    <div class="sidebar">
+      <h5>Qualifiers</h5>
+      <ul class="side-nav">
+        {% for qualifier in qualifiers %}
+          <li><a href="{% url 'variable-list' qualifier.code %}">{{ qualifier.label }}</a></li>
+        {% endfor %}
+      </ul>
+      <h5>Domains</h5>
+      <ul class="side-nav">
+        {% for domain in domains %}
+          <li><a href="{% url 'variable-list' domain.code %}">{{ domain.label }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="small-8 columns">
+    <h1 class="main-headline">
+      {% if domain.is_qualifier %}Qualifier{% else %}Domain{% endif %}
+      <small>{{ domain.label}} ({{ domain.code }})</small>
+    </h1>
+      {% crispy form form.helper %}
+      {% with table.page as page_obj %}
+        {% include 'snippet_pagination.html' %}
+      {% endwith %}
+      {% render_table table %}
+  </div>
+</div>
+{% endblock content %}
+
+{% block extrajavascript %}
+{{ block.super }}
+<script src="{% static 'bower_components/foundation/js/vendor/jquery.js' %}" type="text/javascript"></script>
+<script src="{% static 'bower_components/jquery-ui/jquery-ui.js' %}" type="text/javascript" ></script>
+<script>
+$( "#id_variable" ).autocomplete({
+  source: {{ form.variable_autocomplete_options|safe }},
+  autoFocus: true,
+});
+</script>
+{% endblock extrajavascript %}

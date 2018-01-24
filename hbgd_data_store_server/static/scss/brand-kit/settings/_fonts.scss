@@ -1,0 +1,11 @@
+@import url("https://fonts.googleapis.com/css?family=Ubuntu:300,400,400italic,700,700italic");
+
+@import url("https://fonts.googleapis.com/css?family=Libre+Baskerville:400,400italic,700");
+
+// Add Font Awesome for icons
+@import "../../../../node_modules/font-awesome/scss/font-awesome";
+$fa-font-path: "assets/fonts" !default;
+
+// Imported in /vendor/foundation/_settings.scss Do not use directly
+$brand-sans-serif: "Ubuntu", "Helvetica Neue", Helvetica, Roboto, Arial, sans-serif !default;
+$brand-serif: "Libre Baskerville", Georgia, Cambria, "Times New Roman", Times, serif !default;

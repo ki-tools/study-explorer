@@ -1,0 +1,51 @@
+{% extends 'content.html' %}
+{% load humanize %}
+
+{% block content %}
+<div class="row buffer">
+<div class="large-6 large-offset-1 columns">
+  <h3 class="subheader">
+  <p>Welcome to the HBGD<i>ki</i> Data Store Explorer.</p>
+  <p>The Data Store currently allows the exploration of {{ total_obs|intcomma|default:0 }} observations from {{ total_studies|intcomma|default:0 }} studies.
+  <p>When starting out, start by using the <a href="{% url 'study-filter' %}">Study Filter</a> to narrow down the list of studies to those with data you're interested in.
+  You can then explore the data in your selected studies in detail in the <a href="{% url 'study-explorer' %}">Study Explorer</a>.</p>
+  </h3>
+  <ul class="small-block-grid-1">
+
+    {% if total_studies > 0 %}
+      <li><a href="{% url 'study-filter' %}"><div class="panel" name='study-filter_panel'>
+        <h5>Study Filter</h5>
+        <button class="button tiny right">Go</button>
+        <p>Narrow down the list of studies to those with data you're interested in by filtering on data domains.</p>
+      </div></a></li>
+      {% if first_domain %}
+        <li><a href="{% url 'study-explorer' %}"><div class="panel" name='study-explorer_panel'>
+          <h5>Study Explorer</h5>
+          <button class="button tiny right">Go</button>
+          <p>Explore the data in selected studies. </p>
+        </div></a></li>
+      {% endif %}
+      <li><a href="{% url 'study-list' %}"><div class="panel" name='study-list_panel'>
+        <h5>Study List</h5>
+        <button class="button tiny right">Go</button>
+        <p>See a list of all studies</p>
+      </div></a></li>
+      {% if first_domain %}
+        <li><a href="{% url 'variable-list' first_domain.code %}"><div class="panel" name='variable-list_panel'>
+          <h5>Variable Lists</h5>
+          <button class="button tiny right">Go</button>
+          <p>Explore the variables and qualifiers in different data domains</p>
+        </div></a></li>
+      {% endif %}
+    {% else %}
+      <li><a href="/admin"><div class="panel" name='admin_panel'>
+        <h5>Admin Portal</h5>
+        <button class="button tiny right">Go</button>
+        <p>Use the Admin Portal to load in studies and domains.</p>
+      </div></a></li>
+
+    {% endif %}
+  </ul>
+</div>
+</div>
+{% endblock content %}

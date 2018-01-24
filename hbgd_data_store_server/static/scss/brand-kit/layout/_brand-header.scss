@@ -1,0 +1,15 @@
+.brand-header {
+  box-shadow: $box-shadow01;
+
+  .image-link img {
+    // temp fix for IE logo height bug
+    max-height: rem-calc(90);
+    padding: rem-calc(24) 0;
+  }
+
+  .menu-icon {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+}

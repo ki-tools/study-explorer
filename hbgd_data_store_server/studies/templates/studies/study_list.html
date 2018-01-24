@@ -1,0 +1,25 @@
+{% extends 'content.html' %}
+{% load django_tables2 %}
+
+{% block content %}
+<div class="row buffer">
+  <div class="large-11 columns">
+    <h1 class="main-headline">Study List</h1>
+  </div>
+</div>
+<div class="row buffer">
+  <div class="large-11 columns">
+    {% if user.is_staff %}
+	<p>
+	  To control the study fields shown in this list or the order of the columns, change the display order of any <a href="{% url 'admin:studies_studyfield_changelist' %}">study field</a>.
+	</p>
+	{% endif %}
+<div class="row">
+  <div class="large-11 columns">
+    {% with table.page as page_obj %}
+      {% include 'snippet_pagination.html' %}
+    {% endwith %}
+  {% render_table table %}
+  </div>
+</div>
+{% endblock content %}

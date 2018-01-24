@@ -1,0 +1,18 @@
+$panel-bg-color: #FAFAFA;
+
+.sidebar {
+  background-color: $panel-bg-color;
+  padding: 32px 20px;
+}
+.side-nav li {
+  margin: 0;
+  padding: 0;
+  }
+.side-nav li a {
+  padding: rem-calc(6) 0;
+}
+
+.accordion-navigation {
+  border: 1px solid #DDDDDD;
+  margin-top: 3px;
+}

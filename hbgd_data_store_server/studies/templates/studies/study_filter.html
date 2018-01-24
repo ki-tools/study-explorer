@@ -1,0 +1,90 @@
+{% extends 'content.html' %}
+{% load django_tables2 crispy_forms_tags keyvalue static %}
+
+{% block extrahead %}
+  {{ block.super }}
+  <link href="{% static 'bower_components/bokeh/bokeh-0.12.3.min.css' %}" rel="stylesheet" type="text/css">
+{% endblock extrahead %}
+
+{% block page_title %} - Study Filter {% endblock page_title %}
+
+{% block content %}
+<div class="row">
+  <div class="small-6 columns">
+    <div class="sidebar">
+      <div class="applied-filters">
+        <h6>Applied filters</h6>
+        <div class="panel">
+          <ul class="inline-list">
+            {% if study_form.applied_filters %}
+              {% for filter_key, filter_value in study_form.applied_filters %}
+                <li class="left"><strong>{{ filter_key }}</strong>{{ filter_value }}</li>
+              {% endfor %}
+            {% else %}
+                <li class="left">None</li>
+            {% endif %}
+          </ul>
+          <p>{{ paginator.count }} out of {{ n_total }} studies</p>
+        </div>
+      </div>
+      <div id="form-parent">
+        {% crispy study_form study_form.helper %}
+      </div>
+    </div>
+	</div>
+  <div class="small-5 columns buffer">
+    <div class="summary-plot">
+      {% if plot_summary_div %}
+        {{ plot_summary_div|safe }}
+      {% else %}
+        The filtered studies have no data associated with them. Please contact your data administrator.
+      {% endif %}
+    </div>
+    {% if filtered_studies|length > 0 %}
+    {% include 'snippet_pagination.html' %}
+      {% for obj in object_list %}
+      <div class="panel">
+        <h6>{{ obj.study_id }}</h6>
+          {% if field_names %}
+          {% with study_dict|keyvalue:obj.study_id as field_dict %}
+          {% for field_name in field_names %}
+            <p><b>{{ field_name }}</b>: {{ field_dict|keyvalue:field_name }}</p>
+          {% endfor %}
+          {% endwith %}
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% endif %}
+  </div>
+  <div class="small-1 columns buffer">
+    {% if filtered_studies %}
+    <a title="View these studies in the study explorer" href="{% url 'study-explorer' %}?{{ GET_params }}">
+      <span class="fa fa-chevron-right fa-3x">
+    </a>
+    {% else %}
+      <span class="disabled fa fa-chevron-right fa-3x">
+    {% endif %}
+  </div>
+</div>
+{% endblock content %}
+
+{% block extrajavascript %}
+  {{ block.super }}
+  <script src="{% static 'bower_components/jquery-sticky/jquery.sticky.js' %}"></script>
+  <script>
+    $("#sticky-menu").sticky({topSpacing:0, zIndex:100});
+
+    function indicate_new_filters() {
+      $("#sticky-menu").addClass("alert");
+      $(".study-counts").addClass("study-counts-inactive");
+      $("#message-bar").text("New filters have been selected. Click Apply to refresh studies.");
+    }
+
+    $(".domain-checkbox").on('change', indicate_new_filters);
+    $('.study-counts').on('change', indicate_new_filters);
+
+  </script>
+  <script src="{% static 'bower_components/bokeh/bokeh-0.12.3.min.js' %}" type="text/javascript"></script>
+  <script src="{% static 'bower_components/bokeh/bokeh-widgets-0.12.3.min.js' %}"></script>
+  {{ plot_summary_script|safe }}
+{% endblock extrajavascript %}

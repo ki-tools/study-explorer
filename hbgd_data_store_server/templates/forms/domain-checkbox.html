@@ -1,0 +1,143 @@
+{% load l10n index static %}
+
+{% block extrahead %}
+  <script src="{% static 'bower_components/foundation/js/vendor/jquery.js' %}" type="text/javascript"></script>
+  <script src="{% static 'bower_components/jquery-ui/jquery-ui.js' %}" type="text/javascript" ></script>
+{% endblock extrahead %}
+
+<div class="row">
+  {% if field.field.categories %}
+  <div class="large-4 columns">
+    <select id="{{ field.html_name }}_dropdown">
+      <option value=""></option>
+      {% for cat in field.field.unique_categories %}
+      <option value="{{ cat }}">{{ cat }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  {% endif %}
+
+  <div class="large-{% if field.field.categories %}8{% else %}12{% endif %} columns">
+    <input class="textinput textInput ui-autocomplete-input" id="{{ field.html_name }}_autocomplete" name="variable" placeholder="Search by Variable" type="text" autocomplete="off">
+  </div>
+</div>
+
+<div class="row">
+  <div class="large-12 columns">
+    <div class="button tiny" id="{{ field.html_name }}_selectall">Select All</div>
+    <div class="button tiny secondary" id="{{ field.html_name }}_unselectall">Unselect All</div>
+  </div>
+</div>
+
+<table class="multi tiny radius clearfix domain-filter-table" id="{{ field.html_name }}_table">
+<tr>
+  <th></th>
+  {% if field.field.categories %}
+  <th>
+	Category
+  </th>
+  {% endif %}
+  <th>
+	Variable Code
+  </th>
+  <th>
+	Variable Label
+  </th>
+  <th>
+	Study Count
+  </th>
+</tr>
+{% for choice in field.field.choices %}
+<tr>
+  <td>
+	<input class="domain-checkbox" type="checkbox"{% if choice.0 in field.value or choice.0|stringformat:"s" in field.value or choice.0|stringformat:"s" == field.value|stringformat:"s" %} checked="checked"{% endif %} name="{{ field.html_name }}" id="id_{{ field.html_name }}_{{ forloop.counter }}" value="{{ choice.0|unlocalize }}">
+  </td>
+  {% if field.field.categories %}
+  <td>
+	<span class="switch-label left">{{ field.field.categories|index:forloop.counter0 }}</span>
+  </td>
+  {% endif %}
+  <td>
+	<span class="switch-label left">{{ choice.1|unlocalize }}</span>
+  </td>
+  <td>
+	<span class="switch-label left">{{ choice.2|unlocalize }}</span>
+  </td>
+  <td>
+	<span class="switch-label left">
+    <div class="study-counts">
+      {{ field.field.counts|index:forloop.counter0 }}
+    </div>
+  </span>
+  </td>
+</tr>
+{% endfor %}
+</table>
+
+<script>
+  function hide_rows (event, ui) {
+    $("#{{ field.html_name }}_dropdown").val('');
+    value = (ui && ui.value) ? ui.value : $(this).val();
+    table = $("#{{ field.html_name }}_table > tbody > tr");
+    table.each(function (idx, tr) {
+      if (value === '') { $(tr).show(); return true;}
+      [cidx, lidx] = tr.children.length === 3 ? [1, 2] : [2, 3];
+      checkbox = tr.children[0].children[0];
+      code = tr.children[cidx].children[0];
+      label = tr.children[lidx].children[0];
+      if (code === undefined || label === undefined) { return true; }
+      if (checkbox.checked || code.textContent.includes(value) || label.textContent.includes(value)) {
+        $(tr).show();
+      } else {
+        $(tr).hide();
+      }
+    });
+  }
+
+  $( "#{{ field.html_name }}_autocomplete" ).autocomplete({
+    source: {{ field.field.autocomplete|safe }},
+    autoFocus: true,
+    close: hide_rows
+  });
+
+  $("#{{ field.html_name }}_autocomplete").on("change keyup paste click", hide_rows);
+
+  {% if field.field.categories %}
+  function category_filter () {
+    $("#{{ field.html_name }}_autocomplete").val('');
+    value = $(this).val();
+    table = $("#{{ field.html_name }}_table > tbody > tr");
+    table.each(function (idx, tr) {
+      checkbox = tr.children[0].children[0];
+      category = tr.children[1].children[0];
+      if (category == undefined) { return true; }
+      if (value == '') {
+        $(tr).show();
+      } else if (category.textContent != value) {
+        $(tr).hide();
+      } else { $(tr).show() }
+    });
+  }
+  $("#{{ field.html_name }}_dropdown").change(category_filter);
+  {% endif %}
+
+  function _{{ field.html_name }}_select_opposite (state) {
+    console.log(state);
+    checkboxes = $("#{{ field.html_name }}_table tr:visible .domain-checkbox");
+    console.log(checkboxes);
+    checkboxes.each(function (idx, checkbox) {
+      if (checkbox.checked === state) {
+        // Use click so it trigges event
+        checkbox.click();
+      }
+    });
+  }
+  function {{ field.html_name }}_select_all() {
+    _{{ field.html_name }}_select_opposite(false);
+  }
+  function {{ field.html_name }}_unselect_all () {
+    _{{ field.html_name }}_select_opposite(true);
+  }
+  $("#{{ field.html_name }}_selectall").on("click", {{ field.html_name }}_select_all);
+  $("#{{ field.html_name }}_unselectall").on("click", {{ field.html_name}}_unselect_all);
+</script>

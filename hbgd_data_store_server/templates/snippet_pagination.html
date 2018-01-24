@@ -1,0 +1,31 @@
+{% load django_tables2 %}
+
+<ul class="pagination">
+  {% block pagination %}
+  <li>
+    {% if page_obj.has_previous %}
+      {% if table %}
+        <span><a href="{% querystring table.prefixed_page_field=table.page.previous_page_number %}">Previous</a></span>
+      {% else %}
+        <span><a href="?{{ GET_params }}&amp;page={{ page_obj.previous_page_number }}">Previous</a></span>
+      {% endif %}
+    {% else %}
+      <span><a class="disabled">Previous</a></span>
+    {% endif %}
+  </li>
+  <li>
+  <span>{{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+  </li>
+  <li>
+    {% if page_obj.has_next %}
+      {% if table %}
+        <span><a href="{% querystring table.prefixed_page_field=table.page.next_page_number %}">Next</a></span>
+      {% else %}
+        <span><a href="?{{ GET_params }}&amp;page={{ page_obj.next_page_number }}">Next</a></span>
+      {% endif %}
+    {% else %}
+      <span><a class="disabled">Next</a></span>
+    {% endif %}
+  </li>
+  {% endblock pagination %}
+</ul>

@@ -1,0 +1,25 @@
+.inline-list-primary,
+.inline-list-secondary {
+  margin: 0;
+  padding: rem-calc(4);
+
+  a,
+  button {
+    display: inline-block;
+    padding: rem-calc(4);
+    font-weight: normal;
+  }
+}
+
+.inline-list-primary {
+  a,
+  button {
+    margin: 0;
+    color: $brand-gray2;
+    font-size: rem-calc(14);
+    text-transform: uppercase;
+    @media #{$xlarge-up} {
+      font-size: rem-calc(16);
+    }
+  }
+}

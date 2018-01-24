@@ -1,0 +1,11 @@
+<input type="hidden" id="id_{{ field.html_name }}" name="{{ field.html_name }}">
+<script>
+  function indicate_new_filters() {
+    $("#sticky-menu").addClass("alert");
+    $(".study-counts").addClass("study-counts-inactive");
+    $("#message-bar").text("New filters have been selected. Click Apply to refresh studies.");
+  }
+
+ $("#id_{{ field.html_name }}").ionRangeSlider({{ field.field.widget_json|safe }})
+                               .on('change', indicate_new_filters)
+</script>

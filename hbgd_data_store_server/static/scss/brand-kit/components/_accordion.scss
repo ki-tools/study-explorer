@@ -1,0 +1,40 @@
+[data-accordion] {
+  margin-left: 0;
+  list-style: none;
+
+  button[aria-expanded] {
+    position: relative;
+    text-align: left;
+  }
+
+  [aria-expanded="true"]::after,
+  [aria-expanded="false"]::after {
+    position: absolute;
+    top: 50%;
+    right: rem-calc(16);
+    transform: translateY(-50%);
+    font-family: FontAwesome;
+    font-size: rem-calc(16);
+    line-height: 1;
+  }
+
+  [aria-expanded="true"]::after {
+    @extend .animated;
+    @extend .fadeIn;
+
+    content: "\f00d";
+  }
+
+  [aria-expanded="false"]::after {
+    content: "\f067";
+  }
+}
+
+[data-accordion-content] {
+  display: none;
+  padding: rem-calc(0 20 20 20);
+
+  &.active {
+    display: block;
+  }
+}

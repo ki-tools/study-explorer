@@ -1,0 +1,38 @@
+.cta-group {
+  @extend .button-group;
+
+  li {
+    padding: 0 rem-calc(10);
+
+    @media #{$large-up} {
+      &:first-of-type {
+        padding-left: 0;
+      }
+
+      &:last-of-type {
+        padding-right: 0;
+      }
+    }
+  }
+}
+
+.cta-group,
+.button-group {
+  button,
+  .button {
+    height: 100%;
+    vertical-align: top;
+  }
+
+  // Foundation does not provide stack-for-medium, so we'll add it ourselves
+  &.stack-for-medium {
+    > li {
+      @include button-group-style($orientation: horizontal);
+      @media #{$medium-only} {
+        @include button-group-style($orientation: vertical);
+
+        width: 100%;
+      }
+    }
+  }
+}

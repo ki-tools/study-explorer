@@ -1,0 +1,145 @@
+{% extends 'content.html' %}
+{% load django_tables2 crispy_forms_tags humanize static %}
+
+{% block extrahead %}
+  {{ block.super }}
+  <link href="{% static 'bower_components/bokeh/bokeh-0.12.3.min.css' %}" rel="stylesheet" type="text/css">
+{% endblock extrahead %}
+
+{% block content %}
+<div class="row study-explorer">
+  <div class="small-4 columns">
+    <div class="sidebar">
+      <div class="applied-filters">
+        <h6>Applied filters</h6>
+        <div class="panel">
+          {% if applied_filters %}
+            <ul class="inline-list">
+            {% for filter_key, filter_value in applied_filters %}
+              <li class="left"><strong>{{ filter_key }}</strong>{{ filter_value }}</li>
+            {% endfor %}
+            </ul>
+          {% else %}
+            <p>None</p>
+          {% endif %}
+          <div class="summary">
+            <p class="left">{{ n_selected }} out of {{ n_total }} studies</p>
+            {% if applied_filters %}
+            <a class="right" href="{% url 'study-filter' %}?{{ request.META.QUERY_STRING }}">
+              <strong>Edit filters</strong>
+            </a>
+            {% else %}
+            <a class="right" href="{% url 'study-filter' %}">
+              <strong>Add filters</strong>
+            </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% crispy form form.helper %}
+    </div>
+  </div>
+  <div class="small-8 columns buffer">
+    <div class="summary-plot">
+      {% if domains %}
+        {{ plot_summary_div|safe }}
+      {% else %}
+        {% if n_studies > 0 %}
+          The filtered studies have no data associated with them. Please contact your data administrator.
+        {% else %}
+          Please select a study from the list, or return to the <a href="{% url 'study-filter' %}">study filter</a> to find new studies.
+        {% endif %}
+      {% endif %}
+    </div>
+    {% comment %}The next two sections have a lot in common. Could be dried out?{% endcomment %}
+    <div class="breakdown clearfix">
+      {% if domains %}
+      <h4>Breakdown by variable</h4>
+      {% endif %}
+      <ul class="tabs vertical" data-tab>
+        {% for domain in domains %}
+          <li class="tab-title {% if forloop.first %}active{% endif %}">
+            <a href="#{{ domain.code }}_tab">{{ domain.label }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+      <div class="tabs-content">
+        {% for domain in domains %}
+        <div class="content {% if forloop.first %}active{% endif %}" id="{{ domain.code }}_tab">
+          <div class="plot-wrapper">
+          {{ domain.heatmap|safe }}
+          {% if n_selected > 0 and domain.heatmap %}
+            <p>Total observations: {{ domain.count|intcomma }}</p>
+            <p><a href="{% url 'export' domain_id=domain.id %}?{{ request.META.QUERY_STRING }}">Download data</a></p>
+          {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="breakdown clearfix">
+      {% if domains %}
+      <h4>Breakdown by age</h4>
+      {% endif %}
+      <ul class="tabs vertical" data-tab>
+        {% for domain in age_domains %}
+          <li class="tab-title {% if forloop.first %}active{% endif %}">
+            <a href="#{{ domain.code }}_tab_age">{{ domain.label }}</a>
+          </li>
+        {% endfor %}
+      </ul>
+      <div class="tabs-content">
+        {% for domain in age_domains %}
+        <div class="content {% if forloop.first %}active{% endif %}" id="{{ domain.code }}_tab_age">
+          <div class="plot-wrapper">
+          {{ domain.age_heatmap|default_if_none:"No breakdown by age"|safe }}
+          {% if n_selected > 0 and domain.age_heatmap %}
+            <p>Total observations: {{ domain.count|intcomma }}</p>
+            <p><a href="{% url 'export_by_age' domain_id=domain.id %}?{{ request.META.QUERY_STRING }}">Download data</a></p>
+          {% endif %}
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
+
+{% block extrajavascript %}
+{{ block.super }}
+<script src="{% static 'bower_components/foundation/js/vendor/jquery.js' %}" type="text/javascript"></script>
+<script src="{% static 'bower_components/jquery-ui/jquery-ui.js' %}" type="text/javascript" ></script>
+<script src="{% static 'bower_components/jquery-sticky/jquery.sticky.js' %}"></script>
+<script>
+  $( "#id_search" ).autocomplete({
+    source: {{ form.search_autocomplete_options|safe }},
+    autoFocus: true,
+    select: function(event, ui) {
+      var checkbox = $("#id_study_" + ui.item.id)
+      if (!checkbox.is(":checked")) checkbox.change();
+      checkbox.prop('checked', true);
+    },
+  }).change();
+
+  $("#sticky-menu").sticky({topSpacing:0, zIndex:100});
+
+  function indicate_new_filters() {
+    $("#sticky-menu").addClass("alert");
+    $("#message-bar").text("New filters have been selected. Click Apply to refresh studies.");
+  }
+
+  $(":checkbox").on('change', indicate_new_filters);
+
+  $(document).on('click.fndtn.accordion', '.accordion-navigation a', function (e) {
+    var icon_id = e.currentTarget.firstElementChild.id;
+    $( "#" + icon_id ).toggleClass("fa-angle-double-up");
+    $( "#" + icon_id ).toggleClass("fa-angle-double-down");
+  });
+</script>
+<script src="{% static 'bower_components/bokeh/bokeh-0.12.3.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'bower_components/bokeh/bokeh-widgets-0.12.3.min.js' %}"></script>
+{{ plot_script|safe }}
+{{ plot_age_script|safe }}
+{{ plot_summary_script|safe }}
+{% endblock extrajavascript %}

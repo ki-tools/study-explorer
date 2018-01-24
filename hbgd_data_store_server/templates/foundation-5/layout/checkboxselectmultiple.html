@@ -1,0 +1,16 @@
+{% load l10n %}
+{% load index %}
+{% for choice in field.field.choices %}
+<div class="switch multi tiny radius clearfix">
+    <input type="checkbox"{% if choice.0 in field.value or choice.0|stringformat:"s" in field.value or choice.0|stringformat:"s" == field.value|stringformat:"s" %} checked="checked"{% endif %} name="{{ field.html_name }}" class='study-counts' id="id_{{ field.html_name }}_{{ forloop.counter }}" value="{{ choice.0|unlocalize }}">
+    <label class="left" for="id_{{ field.html_name}}_{{ forloop.counter }}"{% if flat_attrs %} {{ flat_attrs|safe }}{% endif %}> </label>
+    {% if field.field.counts %}
+    <div style="float:left;">
+      <span class="switch-label left">{{ choice|last|unlocalize }}</span>
+      <span class="study-counts switch-label right">({{ field.field.counts|index:forloop.counter0 }} studies)</span>
+    </div>
+    {% else %}
+      <span class="switch-label left">{{ choice|last|unlocalize }}</span>
+    {% endif %}
+</div>
+{% endfor %}

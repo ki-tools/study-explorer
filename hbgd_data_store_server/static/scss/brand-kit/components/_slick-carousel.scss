@@ -1,0 +1,71 @@
+.slick-slide {
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.slick-prev,
+.slick-next {
+  z-index: $z-index-modal;
+  width: rem-calc(48);
+  height: 100%;
+  opacity: 0.2;
+
+  &::before {
+    color: $brand-black;
+    font-size: rem-calc(36);
+  }
+
+  &:hover,
+  &:focus {
+    opacity: 0.6;
+  }
+
+  &:focus {
+    outline: rem-calc(1) solid $black20;
+  }
+}
+
+.slick-prev {
+  left: rem-calc(24);
+
+  &::before {
+    content: "\f137";
+  }
+}
+
+.slick-next {
+  right: rem-calc(24);
+
+  &::before {
+    content: "\f138";
+  }
+}
+
+.slick-dots {
+  .internal-slick-dots & {
+    position: absolute;
+    bottom: 0;
+    margin: rem-calc(5);
+  }
+
+  li button {
+    &:focus {
+      outline: rem-calc(1) solid $black20;
+    }
+
+    &::before {
+      content: "\f111";
+      font-size: rem-calc(12);
+    }
+  }
+}
+
+.slick-external-arrows {
+  .slick-prev {
+    left: rem-calc(-100px);
+  }
+
+  .slick-next {
+    right: rem-calc(-100px);
+  }
+}

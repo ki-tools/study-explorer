@@ -1,0 +1,19 @@
+.menu-icon {
+  padding: 0;
+
+  .fa-bars {
+    font-size: rem-calc(20);
+  }
+}
+
+.icon-large {
+  display: block;
+  width: rem-calc(160);
+  margin: 0 auto;
+}
+
+.icon-small {
+  display: block;
+  width: rem-calc(80);
+  margin: 0 auto;
+}

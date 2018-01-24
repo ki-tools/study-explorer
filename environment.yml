@@ -1,0 +1,31 @@
+name: hbgd-data-store-server
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  # - python # cannot specify in environment.yml - prevents travis working
+  - beautifulsoup4 ==4.5.1
+  - bokeh ==0.12.3
+  - colorcet ==0.9.1
+  - Django ==1.10.5
+  - psycopg2 ==2.6.2
+  - pytest ==3.0.5
+  - pytest-cov ==2.4.0
+  - pandas ==0.18.1
+  - toolz ==0.8.2
+  - pip:
+    - crispy-forms-foundation ==0.5.4
+    - django-crispy-forms ==1.6.1
+    - django-debug-toolbar ==1.6
+    - django-docs==0.2.1
+    - django-extensions ==1.7.5
+    - django_tables2 ==1.2.6
+    - factory_boy ==2.8.1
+    - pytest-django ==3.1.2
+    - pytest-flake8 ==0.8.1
+    - pytest-selenium ==1.9.0
+    - python-coveralls ==2.9.0
+    - selenium ==3.0.2
+    - sphinx ==1.5.3
+    - sphinx-rtd-theme ==0.2.0
+    - whitenoise ==3.2.2

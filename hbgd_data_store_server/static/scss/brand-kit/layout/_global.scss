@@ -1,0 +1,43 @@
+$body-background: $brand-gray1 !default;
+$inner-wrap-background: $white !default;
+$skip-to-main-float: right !default;
+$main-min-height: 600px !default;
+$main-margin: rem-calc(20 20 80) !default;
+
+body {
+  background: $body-background;
+}
+
+main {
+  min-height: $main-min-height;
+  margin: $main-margin;
+}
+
+.inner-wrap {
+  background: $inner-wrap-background;
+}
+
+.skip-to-main {
+  float: $skip-to-main-float;
+  margin: rem-calc(4 0);
+  padding: rem-calc(14);
+  font-size: rem-calc(14);
+  text-transform: uppercase;
+}
+
+.buffer {
+  padding: rem-calc(40) 0;
+}
+
+// most rows have a max-width of 1024px but sometimes we need wide rows
+.row.wide {
+  max-width: rem-calc(1240px);
+}
+
+// set the parent container to position: relative, or center to the window
+.absolute-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

@@ -1,0 +1,142 @@
+@mixin continuum-button {
+  color: $white;
+  font-size: rem-calc(20px);
+  text-transform: uppercase;
+  border: 1px solid transparent;
+  border-bottom: 2px solid $brand-secondary-alt1;
+  background-color: $brand-secondary;
+
+  &:hover,
+  &:focus {
+    color: $white;
+    border-bottom: 2px solid $brand-secondary-alt1;
+    background-color: $brand-secondary-alt1;
+  }
+
+  // additional scope to override Foundation
+  &.disabled,
+  &[disabled],
+  &.disabled:hover,
+  &[disabled]:hover,
+  &.disabled:focus,
+  &[disabled]:focus {
+    color: $black10;
+    border: 1px solid transparent;
+    border-bottom: 2px solid transparent;
+    background-color: $black30;
+  }
+}
+
+.button {
+  @include continuum-button;
+}
+
+.primary.button {
+  color: $white;
+  border-bottom: 2px solid $brand-primary-alt1;
+  background-color: $brand-primary;
+
+  &:hover,
+  &:focus {
+    border-bottom: 2px solid transparent;
+    background-color: $brand-primary-alt1;
+  }
+}
+
+// convenience class.
+// matches default styles for .button and button elements
+.secondary.button {
+  @include continuum-button;
+}
+
+.alt1.button {
+  color: $brand-primary;
+  border: 1px solid $brand-primary;
+  border-bottom: 2px solid $brand-primary;
+  background-color: $white;
+
+  &:hover,
+  &:focus {
+    color: $brand-primary-alt1;
+    border: 1px solid $brand-primary-alt1;
+    border-bottom: 2px solid $brand-primary-alt1;
+    background-color: $white;
+  }
+}
+
+.alt2.button {
+  color: $brand-secondary;
+  border: 1px solid $brand-secondary;
+  border-bottom: 2px solid $brand-secondary;
+  background-color: $white;
+
+  &:hover,
+  &:focus {
+    color: $brand-secondary-alt1;
+    border: 1px solid $brand-secondary-alt1;
+    border-bottom: 2px solid $brand-secondary-alt1;
+    background-color: $white;
+  }
+}
+
+.alt3.button {
+  color: $white;
+  border: 1px solid transparent;
+  border-bottom: 2px solid darken($brand-primary-alt1, 5%);
+  background-color: $brand-primary-alt1;
+
+  &:hover,
+  &:focus {
+    color: $white;
+    border-bottom: 2px solid darken($brand-primary-alt1, 10%);
+    background-color: darken($brand-primary-alt1, 5%);
+  }
+}
+
+.alt4.button {
+  color: $white;
+  border: 1px solid transparent;
+  border-bottom: 2px solid darken($brand-secondary-alt1, 5%);
+  background-color: $brand-secondary-alt1;
+
+  &:hover,
+  &:focus {
+    color: $white;
+    border-bottom: 2px solid darken($brand-secondary-alt1, 10%);
+    background-color: darken($brand-secondary-alt1, 5%);
+  }
+}
+
+.anchor.button {
+  color: $anchor-font-color;
+  line-height: inherit;
+  border-bottom: 1px solid transparent;
+  background-color: transparent !important;
+
+  &:hover,
+  &:focus {
+    color: $anchor-font-color-hover;
+    border-bottom: 1px dotted $brand-secondary-alt1;
+    background-color: transparent;
+  }
+}
+
+.close.button,
+// We need  additional scope here to override default Foundation css
+.reveal-modal .close.button {
+  @extend .anchor.button;
+
+  margin: 0;
+  padding: rem-calc(20);
+  font-size: rem-calc(24);
+}
+
+.off-canvas-close {
+  height: 100%;
+}
+
+button.expand,
+.button.expand,
+.expand.secondary.button {
+  font-size: rem-calc(20px);
+}

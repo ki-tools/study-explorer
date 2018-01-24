@@ -1,0 +1,99 @@
+// @todo: convert to sass mixin for custom settings
+.responsive-table {
+  // for details on th scope, see https://developer.mozilla.org/en-US/docs/Web/HTML/Element/th#attr-scope
+  [scope="row"] {
+    max-width: rem-calc(600);
+  }
+
+  td,
+  [scope="col"] {
+    text-align: center;
+  }
+
+  td,
+  [scope="row"] {
+    color: $monsoon;
+  }
+
+  [scope="col"] {
+    text-transform: uppercase;
+  }
+
+  tr:nth-of-type(even) {
+    background: $black05;
+  }
+
+  tr {
+    // .full-headers are displayed at full width, .stack-headers are displayed at small breakpoints when the table collapses/stacks
+    &.full-header,
+    &.stack-header {
+      border: solid 1px $black20;
+
+      th {
+        background: $black10;
+      }
+    }
+  }
+
+  .stack-header {
+    display: none;
+  }
+
+  @media (max-width: 668px) {
+    th {
+      display: none;
+    }
+
+    tr {
+      display: block;
+      padding: rem-calc(10);
+      border-bottom: 2px solid $black20;
+
+      &.full-header,
+      &.stack-header td {
+        display: none;
+      }
+
+      &.stack-header {
+        display: block;
+        padding: 0;
+        border: 0;
+
+        span {
+          padding: 0 0 0 rem-calc(10);
+          font-weight: $font-weight-bold;
+          text-transform: uppercase;
+        }
+      }
+    }
+
+    td,
+    [scope="row"] {
+      display: block;
+      font-weight: $font-weight-normal;
+      border-bottom: 1px dotted $black20;
+    }
+
+    [scope="row"] {
+      font-size: rem-calc(16);
+    }
+
+    td {
+      font-size: rem-calc(13);
+      text-align: right;
+    }
+
+    td:last-child {
+      border-bottom: 0;
+    }
+
+    td::before {
+      float: left;
+      width: rem-calc(100);
+      content: attr(data-label);
+      font-weight: $font-weight-bold;
+      text-align: left;
+      text-transform: uppercase;
+    }
+  }
+}

@@ -1,0 +1,41 @@
+label {
+  margin-bottom: rem-calc(10);
+}
+
+select {
+  &:focus {
+    outline: 0;
+  }
+}
+
+textarea {
+  min-height: rem-calc(100);
+}
+
+
+input[type="submit"] {
+  @extend button;
+}
+
+.form-error {
+  display: block;
+  padding-bottom: rem-calc(8);
+}
+
+.error {
+  input,
+  input:focus,
+  textarea,
+  textarea:focus,
+  select,
+  select:focus {
+    margin-bottom: rem-calc(16);
+    border: 1px solid $alert-color;
+  }
+}
+
+form .help-text {
+  @extend small;
+
+  font-style: italic;
+}

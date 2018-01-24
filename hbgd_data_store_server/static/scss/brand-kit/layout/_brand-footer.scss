@@ -1,0 +1,22 @@
+.brand-footer {
+  min-height: rem-calc(200);
+  padding: rem-calc(40 0);
+  font-size: rem-calc(14);
+  background: $brand-gray1;
+
+  .image-link img {
+    padding-bottom: rem-calc(20);
+  }
+
+  span {
+    font-weight: $font-weight-light;
+  }
+
+  .copyright {
+    text-align: center;
+
+    @media #{$medium-up} {
+      text-align: right;
+    }
+  }
+}
