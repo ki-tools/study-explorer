@@ -1,18 +1,10 @@
-# hbgd-data-store-server
+# HBGDki Data Store Explorer
+
 [![Build Status](https://travis-ci.org/pcstout/study-explorer.svg?branch=master)](https://travis-ci.org/pcstout/study-explorer)
 [![Coverage Status](https://coveralls.io/repos/github/pcstout/study-explorer/badge.svg?branch=master)](https://coveralls.io/github/pcstout/study-explorer?branch=master)
 
-
+# Description
 A server for deploying the data catalogue
-
-# Running locally
-If you've already been through setup once
-
-* T1 - ``$ postgres -D data``
-* T2 - ``$ cd hbgd_data_store_server; ./manage.py runserver``
-
-# Running tests
-* ``$ ./manage.py test``
 
 # Setup
 
@@ -23,7 +15,7 @@ $ conda env create
 $ source activate hbgd-data-store-server
 ```
 
-If you want to install postgres in your conda environment
+If you want to install postgres in your conda environment:
 ```sh
 $ conda install postgresql
 $ mkdir data
@@ -58,16 +50,15 @@ export MY_SECRET_KEY='your secret key'
 Migrate the database:
 
 ```sh
-$ cd ..
 $ ./manage.py migrate
 ```
 
-Load the sampledata (optional)
+Load the sample data (optional):
 ```sh
 $ ./manage.py loaddata ../sampledata.json
 ```
 
-Make a superuser
+Make a superuser:
 ```
 $ ./manage.py createsuperuser
 ```
@@ -79,7 +70,6 @@ $ ./manage.py createsuperuser
 * Edit scss not stylesheets directory
 * Check in built css.
 
-
 ### Run it
 
 ```sh
@@ -87,5 +77,18 @@ $ ./manage.py runserver
 ```
 
 Now go to:
- - the home page http://localhost:8000
- - or admin page localhost:8000/admin
+ - Home page http://localhost:8000
+ - Admin page localhost:8000/admin
+
+# Running locally
+If you've already been through setup once:
+
+```sh
+$ postgres -D data
+$ cd hbgd_data_store_server; ./manage.py runserver
+```
+
+# Running tests
+```sh
+$ ./manage.py test
+```
