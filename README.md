@@ -1,10 +1,9 @@
-# HBGDki Data Store Explorer
-
-[![Build Status](https://travis-ci.org/pcstout/study-explorer.svg?branch=master)](https://travis-ci.org/pcstout/study-explorer)
-[![Coverage Status](https://coveralls.io/repos/github/pcstout/study-explorer/badge.svg?branch=master)](https://coveralls.io/github/pcstout/study-explorer?branch=master)
+# HBGDki Study Explorer
 
 # Description
-A server for deploying the data catalogue
+The Study Explorer is a tool that helps you to understand the contents of individual studies contributed to the HBGD knowledge base.
+
+The Study Explorer tool, as known as the Data Store Explorer, presents information about the experimental design of the individual studies, such as whether a study is longitudinal or cross-sectional, interventional, or observational, and the ages, calendar years, and countries of study enrollment. The tool enables you to search for the presence of standardized data fields such as anthropometry measures, biomarkers, microbiology tests, and nutrient intake quantities.
 
 # Setup
 
