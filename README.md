@@ -78,6 +78,7 @@ $ ./manage.py runserver
 Now go to:
  - Home page http://localhost:8000
  - Admin page http://localhost:8000/admin
+ - User & Developer Documentation http://localhost:8000/docs
 
 # Running locally
 If you've already been through setup once:
