@@ -10,8 +10,8 @@ Run development server
 
 If you've already been through setup once:
 
-* T1 - :bash:`$ postgres -D data`
-* T2 - :bash:`$ cd hbgd_data_store_server; ./manage.py runserver`
+* :bash:`$ postgres -D data`
+* :bash:`$ cd hbgd_data_store_server; ./manage.py runserver`
 
 
 Developer Setup
