@@ -44,7 +44,7 @@ Deploy the app:
 
 .. code:: bash
 
-	$ git clean -xfdi .
+	$ git clean -xfdi --exclude .elasticbeanstalk .
 
 * Collect static: ./manage.py collectstatic
 
