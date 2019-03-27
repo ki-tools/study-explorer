@@ -81,7 +81,7 @@ def get_counts_by_domain(df):
     """
 
     columns = ['study', 'study_label', 'domain_code', 'domain_label']
-    df2 = df.groupby(columns, as_index=False)[["count", "subjects"]].sum()
+    df2 = df.groupby(columns, as_index=False)[["count", "subjects"]].max()
 
     return df2
 
@@ -117,7 +117,7 @@ def get_variable_counts(df, var_lookup, domain_code):
 
     df2 = df[domain_code].reset_index()
 
-    grouped = df2.groupby(['study', 'study_label', domain_code], as_index=False).sum()
+    grouped = df2.groupby(['study', 'study_label', domain_code], as_index=False).max()
 
     if len(grouped['count'].dropna()) == 0:
         return None
