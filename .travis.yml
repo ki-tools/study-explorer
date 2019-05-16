@@ -1,4 +1,5 @@
 language: python
+dist: xenial
 
 addons:
   firefox: "latest"
@@ -54,10 +55,11 @@ script:
   # Run tests
   - cd hbgd_data_store_server
   - python manage.py collectstatic --noinput
+  - PYTHON=$(which python)
   - if [ "$COVERALLS" = "true" ] && [ "$FLAKE8" = "true" ] ; then
-    xvfb-run python manage.py test --driver Firefox --cov --cov-report term-missing -v --flake8;
+    xvfb-run "${PYTHON}" manage.py test --driver Firefox --cov --cov-report term-missing -v --flake8;
     else
-    xvfb-run python manage.py test --driver Firefox -v;
+    xvfb-run "${PYTHON}" manage.py test --driver Firefox -v;
     fi
 
 after_success:
