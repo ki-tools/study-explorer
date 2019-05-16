@@ -646,11 +646,9 @@ def tests_explorer_view_get_context_data_adds_domains_properties_correctly(mock_
         assert context_domains[i]['label'] == domain.label
         assert context_domains[i]['code'] == domain.code.strip('*')
         assert context_domains[i]['id'] == domain.id
-        if i == 3:  # Handle age domain separately
-            count = 300
-        else:
+        if i != 3:  # Handle age domain separately
             assert context_domains[i]['heatmap'] == 'div_%s' % domain.label.strip('*')
-            count = 100
+        count = 100
         assert context_domains[i]['count'] == count
 
     context_age_domains = context['age_domains']

@@ -1,4 +1,7 @@
 # Elastic Beanstalk Files
 .elasticbeanstalk/*
+data/csv/*
+.venv/
+.venv/*
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml

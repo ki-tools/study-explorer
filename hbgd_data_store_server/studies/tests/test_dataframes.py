@@ -110,7 +110,7 @@ def test_get_counts_by_domain(test_df):
 
     assert set(df.columns) == set(['study', 'study_label', 'domain_code', 'count', 'domain_label', 'subjects'])
     pd.util.testing.assert_series_equal(df['count'],
-                                        pd.Series(data=[45, 23, 45, 21], name='count'))
+                                        pd.Series(data=[23, 23, 23, 21], name='count'))
     pd.util.testing.assert_series_equal(df['domain_label'],
                                         pd.Series(data=["Age", "bar", "foo", "foo"], name='domain_label'))
 
