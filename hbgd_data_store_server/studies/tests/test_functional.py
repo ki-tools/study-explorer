@@ -19,7 +19,6 @@ import pytest
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
@@ -36,6 +35,18 @@ from .factories import (
 )
 
 from ..models import Study, Variable
+
+
+def scroll_shim(passed_in_driver, obj):
+    x = obj.location['x']
+    y = obj.location['y']
+    scroll_by_coord = 'window.scrollTo(%s,%s);' % (
+        x,
+        y
+    )
+    scroll_nav_out_of_way = 'window.scrollBy(0, -120);'
+    passed_in_driver.execute_script(scroll_by_coord)
+    passed_in_driver.execute_script(scroll_nav_out_of_way)
 
 
 @pytest.fixture
@@ -116,6 +127,8 @@ def test_study_explorer_shows_tabs_for_domain(live_server, selenium, setup_domai
     selenium.get(url)
 
     study_checkbox = selenium.find_element_by_id("id_study_1")
+    if 'firefox' in selenium.capabilities['browserName']:
+        scroll_shim(selenium, study_checkbox)
     ActionChains(selenium).move_to_element(study_checkbox).click().perform()
 
     apply_button = selenium.find_element_by_id("submit-id-apply")
