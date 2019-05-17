@@ -12,13 +12,12 @@ matrix:
   include:
   - python: "3.5"
     env: USE_CONDA=true
-  - python: "3.6"
+  - python: "3.5"
     env: USE_CONDA=true COVERALLS=true FLAKE8=true
   - python: "3.5"
     env: USE_PIP=true
 
 before_script:
-  - set -x
   - wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
   - tar -xvzf geckodriver-v0.24.0-linux64.tar.gz
   - chmod +x geckodriver && sudo mv geckodriver /usr/local/bin
@@ -28,8 +27,8 @@ before_script:
 install:
   - if [ "$USE_PIP" = "true" ]; then
     echo "---- Install dependencies with pip";
-    pip install --upgrade pip;
-    pip install -r hbgd_data_store_server/requirements.txt;
+    pip3 install --upgrade pip;
+    pip3 install -r hbgd_data_store_server/requirements.txt;
     fi
   - if [ "$USE_CONDA" = "true" ]; then
     echo "---- Install miniconda";
@@ -41,10 +40,13 @@ install:
     conda config --set always_yes yes --set changeps1 no;
     conda update -q conda;
     echo "---- Install dependencies with conda";
+    echo "     Travis Python ${TRAVIS_PYTHON_VERSION}";
     conda create -n hbgd-data-store-server python=$TRAVIS_PYTHON_VERSION;
     source activate hbgd-data-store-server;
     conda env update -f environment.yml;
     fi
+  - export PYTHON=$(which python3);
+    "${PYTHON}" --version;
 
 script:
   # Django environment variables
@@ -55,8 +57,7 @@ script:
   - popd
   # Run tests
   - cd hbgd_data_store_server
-  - python manage.py collectstatic --noinput
-  - export PYTHON=$(which python3)
+  - "${PYTHON}" manage.py collectstatic --noinput
   - if [ "$COVERALLS" = "true" ] && [ "$FLAKE8" = "true" ] ; then
     xvfb-run "${PYTHON}" manage.py test --driver Firefox --cov --cov-report term-missing -v --flake8;
     else
