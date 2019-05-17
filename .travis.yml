@@ -46,7 +46,7 @@ install:
     conda env update -f environment.yml;
     fi
   - export PYTHON=$(which python3);
-    "${PYTHON}" --version;
+    "${PYTHON}" --version
 
 script:
   # Django environment variables
