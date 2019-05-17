@@ -40,13 +40,10 @@ install:
     conda config --set always_yes yes --set changeps1 no;
     conda update -q conda;
     echo "---- Install dependencies with conda";
-    echo "     Travis Python ${TRAVIS_PYTHON_VERSION}";
     conda create -n hbgd-data-store-server python=$TRAVIS_PYTHON_VERSION;
     source activate hbgd-data-store-server;
     conda env update -f environment.yml;
     fi
-  - export PYTHON=$(which python3);
-    "${PYTHON}" --version
 
 script:
   # Django environment variables
@@ -57,11 +54,11 @@ script:
   - popd
   # Run tests
   - cd hbgd_data_store_server
-  - "${PYTHON}" manage.py collectstatic --noinput
+  - python3 manage.py collectstatic --noinput
   - if [ "$COVERALLS" = "true" ] && [ "$FLAKE8" = "true" ] ; then
-    xvfb-run "${PYTHON}" manage.py test --driver Firefox --cov --cov-report term-missing -v --flake8;
+    xvfb-run python3 manage.py test --driver Firefox --cov --cov-report term-missing -v --flake8;
     else
-    xvfb-run "${PYTHON}" manage.py test --driver Firefox -v;
+    xvfb-run python3 manage.py test --driver Firefox -v;
     fi
 
 after_success:
