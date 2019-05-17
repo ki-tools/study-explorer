@@ -18,6 +18,7 @@ matrix:
     env: USE_PIP=true
 
 before_script:
+  - set -x
   - wget https://github.com/mozilla/geckodriver/releases/download/v0.24.0/geckodriver-v0.24.0-linux64.tar.gz
   - tar -xvzf geckodriver-v0.24.0-linux64.tar.gz
   - chmod +x geckodriver && sudo mv geckodriver /usr/local/bin
@@ -55,7 +56,7 @@ script:
   # Run tests
   - cd hbgd_data_store_server
   - python manage.py collectstatic --noinput
-  - PYTHON=$(which python)
+  - export PYTHON=$(which python3)
   - if [ "$COVERALLS" = "true" ] && [ "$FLAKE8" = "true" ] ; then
     xvfb-run "${PYTHON}" manage.py test --driver Firefox --cov --cov-report term-missing -v --flake8;
     else
