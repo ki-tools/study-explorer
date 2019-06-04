@@ -21,6 +21,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains
 
 from django.core.urlresolvers import reverse
 from django.core.management import call_command
@@ -34,6 +35,18 @@ from .factories import (
 )
 
 from ..models import Study, Variable
+
+
+def scroll_shim(passed_in_driver, obj):
+    x = obj.location['x']
+    y = obj.location['y']
+    scroll_by_coord = 'window.scrollTo(%s,%s);' % (
+        x,
+        y
+    )
+    scroll_nav_out_of_way = 'window.scrollBy(0, -120);'
+    passed_in_driver.execute_script(scroll_by_coord)
+    passed_in_driver.execute_script(scroll_nav_out_of_way)
 
 
 @pytest.fixture
@@ -114,7 +127,9 @@ def test_study_explorer_shows_tabs_for_domain(live_server, selenium, setup_domai
     selenium.get(url)
 
     study_checkbox = selenium.find_element_by_id("id_study_1")
-    study_checkbox.click()
+    if 'firefox' in selenium.capabilities['browserName']:
+        scroll_shim(selenium, study_checkbox)
+    ActionChains(selenium).move_to_element(study_checkbox).click().perform()
 
     apply_button = selenium.find_element_by_id("submit-id-apply")
     apply_button.click()
@@ -160,7 +175,7 @@ def test_study_explorer_autocomplete_returns_tabs(live_server, selenium, setup_d
         n += 1
         time.sleep(1)
 
-    choices = selenium.execute_script('return $("#id_search").autocomplete( "widget").toArray()[0].innerText')
+    choices = selenium.execute_script('return $("#id_search").autocomplete( "widget").toArray()[0].innerText').strip()
     assert choices == study_id
 
     study_search.send_keys(Keys.RETURN)
@@ -188,7 +203,7 @@ def test_filter_by_variable_code_returns_variable_to_field(live_server, selenium
         n += 1
         time.sleep(1)
 
-    choices = selenium.execute_script('return $("#id_variable").autocomplete( "widget").toArray()[0].innerText')
+    choices = selenium.execute_script('return $("#id_variable").autocomplete( "widget").toArray()[0].innerText').strip()
     assert choices == "Mother"
 
     variable_search.send_keys(Keys.RETURN)
@@ -288,7 +303,7 @@ def test_study_explorer_new_update_sticky_is_working(live_server, selenium, setu
     sticky_menu = selenium.find_element_by_id("sticky-menu")
 
     initial_y_loc = sticky_menu.location['y']
-    assert sticky_menu.value_of_css_property('z-index') == '100'
+    assert sticky_menu.value_of_css_property('z-index') in ('100', 'auto')
     assert sticky_menu.text == no_update_text
 
     checkbox = selenium.find_element_by_id("id_study_21")
@@ -299,7 +314,7 @@ def test_study_explorer_new_update_sticky_is_working(live_server, selenium, setu
     assert sticky_menu.value_of_css_property('z-index') == '100'
 
     # make a change to selection
-    checkbox.click()
+    ActionChains(selenium).move_to_element(checkbox).click().perform()
     assert sticky_menu.text == update_text
 
 
