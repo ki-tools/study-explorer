@@ -116,13 +116,19 @@ class Command(BaseCommand):
         df = df.where((notnull(df)), None)
 
         for field_name in df.columns:
-            study_field, _ = StudyField.objects.get_or_create(field_name=field_name)
+            field_type = 'str'
+            study_field_name = field_name
+            if '::' in field_name:
+                study_field_name, field_type = field_name.split('::', maxsplit=1)
+            study_field, _ = StudyField.objects.get_or_create(field_name=study_field_name)
+            study_field.field_type = field_type
             for study_id, value in df[field_name].to_dict().items():
                 study, _ = Study.objects.get_or_create(study_id=study_id)
                 if value is None:
                     continue
-                study_var, _ = StudyVariable.objects.get_or_create(study_field=study_field,
-                                                                   value=str(value))
-                study_var.studies.add(study)
-                if study_field.field_type == 'list':
-                    study_var.save()
+                for elem in str(value).split(','):
+                    study_var, _ = StudyVariable.objects.get_or_create(study_field=study_field,
+                                                                       value=elem)
+                    study_var.studies.add(study)
+                    if study_field.field_type == 'list':
+                        study_var.save()

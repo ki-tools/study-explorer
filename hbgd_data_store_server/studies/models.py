@@ -33,7 +33,7 @@ FIELD_TYPES = [('list', 'List'), ('int', 'Integer'),
 
 def is_list(val, sep=','):
     """Checks if type can be cast to list"""
-    return len([v.strip() for v in val.split(sep)]) > 1
+    return len([v.strip() for v in val.split(sep)]) > 1  # TODO: Empty lists/len(list) == 1 are apparently invalid? - AE
 
 
 def is_digit(val):
