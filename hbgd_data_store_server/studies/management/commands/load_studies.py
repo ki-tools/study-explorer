@@ -126,7 +126,10 @@ class Command(BaseCommand):
                 study, _ = Study.objects.get_or_create(study_id=study_id)
                 if value is None:
                     continue
-                for elem in str(value).split(','):
+                elements = [str(value)]
+                if field_type == 'list':
+                    elements = str(value).split(',')
+                for elem in elements:
                     study_var, _ = StudyVariable.objects.get_or_create(study_field=study_field,
                                                                        value=elem)
                     study_var.studies.add(study)
