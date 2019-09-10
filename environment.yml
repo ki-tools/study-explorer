@@ -4,9 +4,9 @@ channels:
   - conda-forge
 dependencies:
   # - python # cannot specify in environment.yml - prevents travis working
-  - beautifulsoup4 ==4.5.1
-  - bokeh ==0.12.3
-  - colorcet ==0.9.1
+  - beautifulsoup4  # removed version to make travis work
+  - bokeh  # removed version to make travis work
+  - colorcet  # removed version to make travis work
   - Django ==1.10.5
   - psycopg2 ==2.7.1
   - pytest ==3.3.2
