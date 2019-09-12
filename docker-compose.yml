@@ -1,0 +1,19 @@
+version: '3'
+
+services:
+  db:
+    image: postgres
+    ports:
+      - "5432:5432"
+  web:
+    image: prevagroup/studyexplorer.io
+    ports:
+      - "8000:8000"
+    environment:
+      - SECRET_KEY=foobarbaz
+      - RDS_HOSTNAME=db
+      - RDS_DB_NAME=postgres
+      - RDS_USERNAME=postgres
+      - RDS_PORT=5432
+    depends_on:
+      - db
