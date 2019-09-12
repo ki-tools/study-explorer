@@ -32,8 +32,8 @@ FIELD_TYPES = [('list', 'List'), ('int', 'Integer'),
 
 
 def is_list(val, sep=','):
-    """Checks if type can be cast to list"""
-    return len([v.strip() for v in val.split(sep)]) > 1
+    """Checks if type can be cast to list, which is true for all types"""
+    return True
 
 
 def is_digit(val):

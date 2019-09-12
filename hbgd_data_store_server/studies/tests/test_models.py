@@ -70,15 +70,6 @@ def test_study_field_field_type_as_list_passes_if_at_least_one_preexisting_varia
 
 
 @pytest.mark.django_db
-def test_study_field_preexisting_variable_not_castable_as_list_clean_raises_error():
-    study_field = StudyFieldFactory()
-    StudyVariableFactory(study_field=study_field, value='cat')
-    study_field.field_type = 'list'
-    with pytest.raises(ValidationError):
-        study_field.clean()
-
-
-@pytest.mark.django_db
 def test_study_field_field_type_int_passes_if_variables_empty():
     assert StudyFieldFactory(field_type='int').field_type == 'int'
 

@@ -11,10 +11,6 @@ services:
 matrix:
   include:
   - python: "3.5"
-    env: USE_CONDA=true
-  - python: "3.5"
-    env: USE_CONDA=true COVERALLS=true FLAKE8=true
-  - python: "3.5"
     env: USE_PIP=true
 
 before_script:
