@@ -140,9 +140,3 @@ $ cd hbgd_data_store_server; ./manage.py runserver
 ```sh
 $ ./manage.py test
 ```
-
-Comments
---------
-
-If you find anything in this documentation unsatisfactory, please let me know at aelgert [at] prevagroup dot com or by submitting a GitHub issue.
-
