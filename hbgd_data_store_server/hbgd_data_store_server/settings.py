@@ -142,7 +142,7 @@ if 'RDS_HOSTNAME' in os.environ:
         }
     }
     if 'RDS_PASSWORD' in os.environ:
-        DATABASES['RDS_PASSWORD'] = os.environ.get('RDS_PASSWORD')
+        DATABASES['default']['PASSWORD'] = os.environ.get('RDS_PASSWORD')
 else:
     DATABASES = {
         'default': {
