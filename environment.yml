@@ -8,10 +8,11 @@ dependencies:
   - bokeh  # removed version to make travis work
   - colorcet  # removed version to make travis work
   - Django ==1.10.5
-  - psycopg2 ==2.7.1
+  - psycopg2 ==2.7.3.2
   - pytest ==3.3.2
   - pytest-cov ==2.5.1
   - pandas ==0.18.1
+  - numpy ==1.16.0
   - toolz ==0.8.2
   - pip:
     - crispy-forms-foundation ==0.5.4
