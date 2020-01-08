@@ -10,7 +10,7 @@ services:
 
 matrix:
   include:
-  - python: "3.5"
+  - python: "3.6"
     env: USE_PIP=true
 
 before_script:
