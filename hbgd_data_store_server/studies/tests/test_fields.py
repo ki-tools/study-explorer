@@ -104,19 +104,19 @@ def test_discrete_range_field_choices_with_from_and_to_values():
 def test_discrete_range_field_raise_bad_type_from_value():
     choices = [('A', 'A label'), ('B', 'B label')]
     msg = 'DiscreteRangeField from_value and to_value must be an integer or "null".'
-    with pytest.raises(ValueError, message=msg):
+    with pytest.raises(ValueError, match=msg):
         DiscreteRangeField(from_value='A label', choices=choices)
 
 
 def test_discrete_range_field_raise_out_of_range_from_value():
     choices = [('A', 'A label'), ('B', 'B label')]
     msg = 'DiscreteRangeField from and to values must be less than the length of the list of choices.'
-    with pytest.raises(ValueError, message=msg):
+    with pytest.raises(ValueError, match=msg):
         DiscreteRangeField(from_value=3, choices=choices)
 
 
 def test_discrete_range_field_raise_from_greater_than_to_value():
     choices = [('A', 'A label'), ('B', 'B label')]
     msg = 'DiscreteRangeField from_value cannot be greater than the to_value.'
-    with pytest.raises(ValueError, message=msg):
+    with pytest.raises(ValueError, match=msg):
         DiscreteRangeField(from_value=1, to_value=0, choices=choices)

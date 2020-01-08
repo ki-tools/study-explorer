@@ -116,7 +116,7 @@ def test_get_valid_qualifiers_with_wildcard():
 @pytest.mark.django_db()
 def test_get_valid_qualifiers_with_wildcard_clash():
     DomainFactory(is_qualifier=True, code='*SPEC')
-    with pytest.raises(Exception, message='Qualifier code must match only one column per file.'):
+    with pytest.raises(Exception, match='Qualifier code must match only one column per file.'):
         get_valid_qualifiers(['TESTSPEC', 'TESTSPECN',
                               'TEST2SPEC', 'TEST2SPECN'])
 
@@ -170,7 +170,7 @@ def test_get_qualifiers_undefined_raises_exception():
                          TEST='A', TESTN='0'))
     valid_qualifiers = [(domain1, domain1.code, 'N')]
 
-    with pytest.raises(ValueError, message='Qualifiers cannot be empty'):
+    with pytest.raises(ValueError, match='Qualifiers cannot be empty'):
         get_qualifiers(row, valid_qualifiers)
 
 
@@ -292,7 +292,7 @@ def test_load_idx_skip_on_missing_studyid_column(command_kwargs):
     del df[deleted]
 
     msg = 'IDX file does not contain %s column, skipping.' % deleted
-    with pytest.raises(ValueError, message=msg):
+    with pytest.raises(ValueError, match=msg):
         domain = DomainFactory()
         load_idx.process_idx_df(df, domain=domain, **command_kwargs)
 
@@ -300,11 +300,12 @@ def test_load_idx_skip_on_missing_studyid_column(command_kwargs):
 @pytest.mark.django_db()
 def test_load_idx_skip_on_missing_count_subj_column(command_kwargs):
     # Create dataframe with missing COUNT_SUBJ column
+    deleted = 'COUNT_SUBJ'
     df = _create_sample_idx_df()
-    del df['COUNT_SUBJ']
+    del df[deleted]
 
-    msg = 'IDX file does not contain STUDYID column, skipping.'
-    with pytest.raises(ValueError, message=msg):
+    msg = 'IDX file does not contain %s column, skipping.' % deleted
+    with pytest.raises(ValueError, match=msg):
         domain = DomainFactory()
         load_idx.process_idx_df(df, domain=domain, **command_kwargs)
 
@@ -317,7 +318,7 @@ def test_load_idx_skip_on_missing_count_obs_column(command_kwargs):
     del df[deleted]
 
     msg = 'IDX file does not contain %s column, skipping.' % deleted
-    with pytest.raises(ValueError, message=msg):
+    with pytest.raises(ValueError, match=msg):
         domain = DomainFactory()
         load_idx.process_idx_df(df, domain=domain, **command_kwargs)
 
