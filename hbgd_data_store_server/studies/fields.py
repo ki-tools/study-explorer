@@ -87,7 +87,7 @@ class DiscreteRangeField(forms.MultipleChoiceField):
                 raise ValueError('DiscreteRangeField from and to values must be '
                                  'less than the length of the list of choices.')
         if isinstance(from_value, int) and isinstance(to_value, int) and from_value > to_value:
-            raise ValueError('DiscreteRangeField from_value cannot be greater'
+            raise ValueError('DiscreteRangeField from_value cannot be greater '
                              'than the to_value.')
         self.from_value = from_value
         self.to_value = to_value

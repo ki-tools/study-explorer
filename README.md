@@ -24,7 +24,7 @@ Initialize various settings including database migrations, usernames, passwords 
 
     # Initialize database
     docker-compose exec web /usr/local/bin/python manage.py migrate
-    docker-compose exec web /usr/local/bin/python manage.py createsuperuser --username admin --email aelgert@prevagroup.com
+    docker-compose exec web /usr/local/bin/python manage.py createsuperuser --username admin --email you@yourdomain.com
     psql -h localhost -U postgres postgres -f hbgd_data_store_server/data/sql/000_reset_db.sql
     psql -h localhost -U postgres postgres -f hbgd_data_store_server/data/sql/001_import_studies_domain.sql
     docker-compose exec web /usr/local/bin/python manage.py load_studies data/csv/studyinfo.csv
@@ -138,11 +138,5 @@ $ cd hbgd_data_store_server; ./manage.py runserver
 
 # Running tests
 ```sh
-$ ./manage.py test
+$ ./manage.py test --driver Firefox -v
 ```
-
-Comments
---------
-
-If you find anything in this documentation unsatisfactory, please let me know at aelgert [at] prevagroup dot com or by submitting a GitHub issue.
-
