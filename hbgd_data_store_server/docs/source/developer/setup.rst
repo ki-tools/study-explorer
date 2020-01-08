@@ -70,7 +70,7 @@ Migrate the database
 	$ ./manage.py migrate
 
 .. _create_superuser:
-	
+
 Define a superuser
 ******************
 
@@ -101,4 +101,4 @@ Now go to:
 Running tests
 +++++++++++++
 
-* :bash:`$ ./manage.py test`
+* :bash:`$ ./manage.py test --driver Firefox -v`

@@ -138,5 +138,5 @@ $ cd hbgd_data_store_server; ./manage.py runserver
 
 # Running tests
 ```sh
-$ ./manage.py test
+$ ./manage.py test --driver Firefox -v
 ```
