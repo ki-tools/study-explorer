@@ -6,12 +6,12 @@ addons:
   postgresql: "9.5"
 
 services:
+  - xvfb
   - postgresql
 
 matrix:
   include:
   - python: "3.6"
-    env: USE_PIP=true
 
 before_script:
   - wget https://github.com/mozilla/geckodriver/releases/download/v0.26.0/geckodriver-v0.26.0-linux64.tar.gz
@@ -21,25 +21,8 @@ before_script:
   - export DISPLAY=:99.0
 
 install:
-  - if [ "$USE_PIP" = "true" ]; then
-    echo "---- Install dependencies with pip";
-    pip3 install --upgrade pip;
-    pip3 install -r hbgd_data_store_server/requirements.txt;
-    fi
-  - if [ "$USE_CONDA" = "true" ]; then
-    echo "---- Install miniconda";
-    wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
-    bash miniconda.sh -b -p $HOME/miniconda;
-    export PATH="$HOME/miniconda/bin:$PATH";
-    hash -r;
-    echo "---- Setup conda";
-    conda config --set always_yes yes --set changeps1 no;
-    conda update -q conda;
-    echo "---- Install dependencies with conda";
-    conda create -n hbgd-data-store-server python=$TRAVIS_PYTHON_VERSION;
-    source activate hbgd-data-store-server;
-    conda env update -f environment.yml;
-    fi
+  - pip3 install --upgrade pip;
+  - pip3 install -r hbgd_data_store_server/requirements.txt;
 
 script:
   # Django environment variables
