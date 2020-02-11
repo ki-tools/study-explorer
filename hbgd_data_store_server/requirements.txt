@@ -2,7 +2,7 @@ beautifulsoup4==4.5.1
 bokeh==0.12.3
 colorcet==0.9.1
 crispy-forms-foundation==0.5.4
-Django==1.10.5
+Django==1.11.28
 django-crispy-forms==1.6.1
 django-debug-toolbar==1.6
 django-docs==0.2.1
