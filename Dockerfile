@@ -9,7 +9,7 @@ ADD hbgd_data_store_server /srv/app
 
 #set directoty where CMD will execute
 WORKDIR /srv/app
-#COPY hbgd_data_store_server/requirements.txt ./
+#COPY requirements.txt ./
 
 # Get pip to download and install requirements:
 RUN pip install --no-cache-dir -r requirements.txt && \

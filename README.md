@@ -25,12 +25,12 @@ Initialize various settings including database migrations, usernames, passwords 
     # Initialize database
     docker-compose exec web /usr/local/bin/python manage.py migrate
     docker-compose exec web /usr/local/bin/python manage.py createsuperuser --username admin --email you@yourdomain.com
-    psql -h localhost -U postgres postgres -f hbgd_data_store_server/data/sql/000_reset_db.sql
-    psql -h localhost -U postgres postgres -f hbgd_data_store_server/data/sql/001_import_studies_domain.sql
+    psql -h localhost -U postgres postgres -f data/sql/000_reset_db.sql
+    psql -h localhost -U postgres postgres -f data/sql/001_import_studies_domain.sql
     docker-compose exec web /usr/local/bin/python manage.py load_studies data/csv/studyinfo.csv
-    psql -h localhost -U postgres postgres -f hbgd_data_store_server/data/sql/002_update_studies_studyfield.sql
+    psql -h localhost -U postgres postgres -f data/sql/002_update_studies_studyfield.sql
     docker-compose exec web /usr/local/bin/python manage.py load_idx data/csv/idx.zip
-    psql -h localhost -U postgres postgres -f hbgd_data_store_server/data/sql/003_import_studies_filter.sql
+    psql -h localhost -U postgres postgres -f data/sql/003_import_studies_filter.sql
 
 Navigate to http://localhost:8000 and you will see the study explorer application running.
 
@@ -133,10 +133,22 @@ If you've already been through setup once:
 
 ```sh
 $ postgres -D data
-$ cd hbgd_data_store_server; ./manage.py runserver
+$ ./manage.py runserver
 ```
 
 # Running tests
 ```sh
 $ ./manage.py test --driver Firefox -v
 ```
+
+
+# Dokku Delpoyment
+
+- Add git remote for each environment (only needs to be done once):
+  - `git remote add dokku-se-usa dokku@dokku.studyexplorer.io:se-usa`
+  - `git remote add dokku-se-india dokku@dokku.studyexplorer.io:se-india`
+  - `git remote add dokku-se-africa dokku@dokku.studyexplorer.io:se-africa`
+- Deploy:
+  - `git push dokku-se-usa master`
+  - `git push dokku-se-india master`
+  - `git push dokku-se-africa master`

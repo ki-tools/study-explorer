@@ -21,17 +21,16 @@ before_script:
 
 install:
   - pip3 install --upgrade pip;
-  - pip3 install -r hbgd_data_store_server/requirements.txt;
+  - pip3 install -r requirements.txt;
 
 script:
   # Django environment variables
   - export SECRET_KEY="ASECRET"
   # Build docs
-  - pushd hbgd_data_store_server/docs
+  - pushd docs
   - make html
   - popd
   # Run tests
-  - cd hbgd_data_store_server
   - python3 manage.py collectstatic --noinput
   - if [ "$COVERALLS" = "true" ] && [ "$FLAKE8" = "true" ] ; then
     xvfb-run python3 manage.py test --driver Firefox --cov --cov-report term-missing -v --flake8;
