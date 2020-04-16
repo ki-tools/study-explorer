@@ -1,3 +1,4 @@
+gunicorn
 beautifulsoup4==4.5.1
 bokeh==0.12.3
 colorcet==0.9.1
