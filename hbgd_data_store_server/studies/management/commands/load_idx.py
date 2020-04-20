@@ -61,7 +61,7 @@ def get_domain_variable(row, domain, variable_cache=None):
     code_idx = DOMAIN_CODE_FORMAT.format(domain=domain.code)
     cat_idx = DOMAIN_CAT_FORMAT.format(domain=domain.code)
 
-    code = row.get(code_idx, None)
+    code = row[code_idx]
     if code in EMPTY_IDENTIFIERS:
         return None
 
