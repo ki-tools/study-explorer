@@ -26,6 +26,7 @@ https://docs.djangoproject.com/en/1.10/ref/settings/
 
 import os
 import getpass
+from urllib.parse import urlparse
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -144,6 +145,20 @@ if 'RDS_HOSTNAME' in os.environ:
     }
     if 'RDS_PASSWORD' in os.environ:
         DATABASES['default']['PASSWORD'] = os.environ.get('RDS_PASSWORD')
+elif 'DATABASE_URL' in os.environ:
+    url = urlparse(os.environ.get('DATABASE_URL'))
+    db_name = url.path.replace('/', '')
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': db_name,
+            'USER': url.username,
+            'PASSWORD': url.password,
+            'HOST': url.hostname,
+            'PORT': url.port,
+        }
+    }
 else:
     DATABASES = {
         'default': {
