@@ -142,13 +142,39 @@ $ ./manage.py test --driver Firefox -v
 ```
 
 
-# Dokku Delpoyment
+# Dokku Hosting
 
-- Add git remote for each environment (only needs to be done once):
-  - `git remote add dokku-se-usa dokku@dokku.studyexplorer.io:se-usa`
-  - `git remote add dokku-se-india dokku@dokku.studyexplorer.io:se-india`
-  - `git remote add dokku-se-africa dokku@dokku.studyexplorer.io:se-africa`
-- Deploy:
-  - `git push dokku-se-usa master`
-  - `git push dokku-se-india master`
-  - `git push dokku-se-africa master`
+## Create New App Instance
+
+Execute these commands on the Dokku server:
+
+- Create the app: `dokku apps:create se-<country>` (e.g., `dokku apps:create se-usa`)
+- Create the database: `dokku postgres:create se-<country>-db`
+- Link the database to the app: `dokku postgres:link se-<country>-db se-<country>`
+- Set the ENV variables: `dokku config:set se-<country> ALLOWED_HOSTS=".kiglobalhealth.org,.hbgdki.org,.studyexplorer.io" SECRET_KEY="<your-secret-key>"`
+- Set the domain: `dokku domains:add se-<country> <country>.studyexplorer.io`
+- Import the database export: `dokku postgres:import se-<country>-db < se-<country>.dump`
+
+Execute these commands on your local system:
+
+- Add git remotes: `git remote add se-<country> dokku@dokku.studyexplorer.io:se-<country>`
+- Add your SSH key: `ssh-add -k ~/.ssh/dokku-study-explorer.pem`
+
+## Deployment
+
+- `git push se-staging master`
+- `git push se-usa master`
+- `git push se-india master`
+- `git push se-africa master`
+
+Or via Make:
+- `make deploy_staging`
+- `make deploy_usa`
+- `make deploy_india`
+- `make deploy_africa`
+
+To deploy your currently checked out branch:
+- `make deploy_staging_current_branch`
+- `make deploy_usa_current_branch`
+- `make deploy_india_current_branch`
+- `make deploy_africa_current_branch`
