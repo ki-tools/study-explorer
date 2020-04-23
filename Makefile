@@ -1,3 +1,14 @@
+
+ifeq (deploy,$(firstword $(MAKECMDGOALS)))
+  DEPLOY_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+  $(eval $(DEPLOY_ARGS):;@:)
+endif
+
+ifeq (deploy_current_branch,$(firstword $(MAKECMDGOALS)))
+  DEPLOY_ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+  $(eval $(DEPLOY_ARGS):;@:)
+endif
+
 .PHONY: devserve
 devserve:
 	./manage runserver
@@ -8,46 +19,11 @@ devserve_heroku:
 	heroku local
 
 
-.PHONY: deploy_all
-deploy_all: deploy_staging deploy_usa deploy_india deploy_africa
-	echo "All Instances Deployed"
+.PHONY: deploy
+deploy:
+	$(foreach var,$(DEPLOY_ARGS), git push se-$(var) master;)
 
 
-.PHONY: deploy_staging
-deploy_staging:
-	git push se-staging master
-
-
-.PHONY: deploy_usa
-deploy_usa:
-	git push se-usa master
-
-
-.PHONY: deploy_india
-deploy_india:
-	git push se-india master
-
-
-.PHONY: deploy_africa
-deploy_africa:
-	git push se-africa master
-
-
-.PHONY: deploy_staging_current_branch
-deploy_staging_current_branch:
-	git push se-staging `git rev-parse --abbrev-ref HEAD`:master
-
-
-.PHONY: deploy_usa_current_branch
-deploy_usa_current_branch:
-	git push se-usa `git rev-parse --abbrev-ref HEAD`:master
-
-
-.PHONY: deploy_india_current_branch
-deploy_india_current_branch:
-	git push se-india `git rev-parse --abbrev-ref HEAD`:master
-
-
-.PHONY: deploy_africa_current_branch
-deploy_africa_current_branch:
-	git push se-africa `git rev-parse --abbrev-ref HEAD`:master
+.PHONY: deploy_current_branch
+deploy_current_branch:
+	$(foreach var,$(DEPLOY_ARGS), git push se-$(var) `git rev-parse --abbrev-ref HEAD`:master;)
