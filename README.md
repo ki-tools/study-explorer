@@ -144,6 +144,16 @@ $ ./manage.py test --driver Firefox -v
 
 # Dokku Hosting
 
+## Server Configuration
+
+- Increase nginx timeout. Update `/etc/nginx/conf.d/dokku.conf` add the following lines:
+```text
+proxy_connect_timeout   3600;
+proxy_send_timeout      3600;
+proxy_read_timeout      3600;
+```
+- Restart nginx: `sudo systemctl restart nginx`
+
 ## Create New App Instance
 
 Execute these commands on the Dokku server:

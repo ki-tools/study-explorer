@@ -8,6 +8,11 @@ devserve_heroku:
 	heroku local
 
 
+.PHONY: deploy_all
+deploy_all: deploy_staging deploy_usa deploy_india deploy_africa
+	echo "All Instances Deployed"
+
+
 .PHONY: deploy_staging
 deploy_staging:
 	git push se-staging master
