@@ -3,6 +3,11 @@ devserve:
 	./manage runserver
 
 
+.PHONY: devserve_heroku
+devserve_heroku:
+	heroku local
+
+
 .PHONY: deploy_staging
 deploy_staging:
 	git push se-staging master

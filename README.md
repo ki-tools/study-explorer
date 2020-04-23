@@ -151,7 +151,7 @@ Execute these commands on the Dokku server:
 - Create the app: `dokku apps:create se-<country>` (e.g., `dokku apps:create se-usa`)
 - Create the database: `dokku postgres:create se-<country>-db`
 - Link the database to the app: `dokku postgres:link se-<country>-db se-<country>`
-- Set the ENV variables: `dokku config:set se-<country> ALLOWED_HOSTS=".kiglobalhealth.org,.hbgdki.org,.studyexplorer.io" SECRET_KEY="<your-secret-key>"`
+- Set the ENV variables: `dokku config:set se-<country> WEB_CONCURRENCY=4 ALLOWED_HOSTS=".kiglobalhealth.org,.hbgdki.org,.studyexplorer.io" SECRET_KEY="<your-secret-key>"`
 - Set the domain: `dokku domains:add se-<country> <country>.studyexplorer.io`
 - Import the database export: `dokku postgres:import se-<country>-db < se-<country>.dump`
 

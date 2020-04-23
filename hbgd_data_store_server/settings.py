@@ -40,7 +40,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', False)
 
-INTERNAL_IPS = ["127.0.0.1", "localhost"]
+INTERNAL_IPS = ["127.0.0.1", "localhost", "0.0.0.0"]
 
 DEFAULT_ALLOWED_HOSTS = ','.join(INTERNAL_IPS)
 
