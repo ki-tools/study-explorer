@@ -14,6 +14,11 @@ devserve:
 	./manage runserver
 
 
+.PHONY: test
+test:
+	./manage.py test --driver Firefox -v
+
+
 .PHONY: devserve_heroku
 devserve_heroku:
 	heroku local
