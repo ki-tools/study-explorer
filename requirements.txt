@@ -1,3 +1,4 @@
+cython
 gunicorn==20.0.4
 beautifulsoup4==4.5.1
 bokeh==0.12.3

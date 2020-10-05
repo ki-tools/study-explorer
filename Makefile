@@ -26,9 +26,9 @@ devserve_heroku:
 
 .PHONY: deploy
 deploy:
-	$(foreach var,$(DEPLOY_ARGS), git push se-$(var) master;)
+	$(foreach var,$(DEPLOY_ARGS), git push -f se-$(var) master;)
 
 
 .PHONY: deploy_current_branch
 deploy_current_branch:
-	$(foreach var,$(DEPLOY_ARGS), git push se-$(var) `git rev-parse --abbrev-ref HEAD`:master;)
+	$(foreach var,$(DEPLOY_ARGS), git push -f se-$(var) `git rev-parse --abbrev-ref HEAD`:master;)
