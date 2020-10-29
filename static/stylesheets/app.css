@@ -10500,3 +10500,13 @@ table.dataframe tbody tr td {
   float: left;
   margin-left: 1em;
 }
+
+.page-footer {
+  width: 100%;
+  height: auto;
+  font-size: small;
+  color: #bbbbbb;
+  background-color: #333333;
+  padding: 10px;
+  margin-top: 15px;
+}
