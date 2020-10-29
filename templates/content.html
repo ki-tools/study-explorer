@@ -17,6 +17,15 @@
   {% block content %}
   {% endblock content %}
 
+  <footer class="page-footer">
+    <span>© {% now "Y" %} Bill & Melinda Gates Foundation. All Rights Reserved.</span>
+    <ul class="footer-links">
+      <li><a href="https://www.gatesfoundation.org/Privacy-and-Cookies-Notice" target="_blank">Privacy & Cookies Notice</a></li>
+      <li><a href="https://www.gatesfoundation.org/Terms-of-Use" target="_blank">Terms Of Use</a></li>
+      <li><a href="https://www.gatesfoundation.org/How-We-Work/General-Information/Reporting-Scams" target="_blank">Be Aware of Fraudulent Activity</a></li>
+    </ul>
+  </footer>
+
   {% block extrajavascript %}
     <script src="{% static 'bower_components/foundation/js/vendor/modernizr.js' %}" type="text/javascript"></script>
     <script src="{% static 'bower_components/foundation/js/foundation/foundation.js' %}" type="text/javascript" charset="utf-8"></script>

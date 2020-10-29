@@ -10500,3 +10500,37 @@ table.dataframe tbody tr td {
   float: left;
   margin-left: 1em;
 }
+
+.page-footer {
+  width: 100%;
+  height: auto;
+  font-size: small;
+  color: #888888;
+  background-color: #333333;
+  padding: 20px;
+  margin-top: 15px;
+}
+
+.footer-links {
+  list-style-type: none;
+  display: inline;
+}
+
+.footer-links li {
+  display: inline;
+}
+
+.footer-links li a {
+  list-style-type: none;
+  display: inline;
+  color: #888888;
+  padding: 0px 5px 0px 5px;
+  text-decoration: underline;
+  font-size: small;
+}
+
+.footer-links li a:hover {
+  color: #FFFFFF;
+  text-decoration: none;
+}
+

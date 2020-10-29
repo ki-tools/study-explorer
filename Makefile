@@ -11,7 +11,7 @@ endif
 
 .PHONY: devserve
 devserve:
-	./manage runserver
+	./manage.py runserver
 
 
 .PHONY: test
