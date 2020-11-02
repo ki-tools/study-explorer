@@ -80,7 +80,7 @@ def test_it_hides_the_cookie_banner(page, live_server, selenium, hide_cookie_ban
     cookie_banner = page.find_element_by_class_name('cookie-banner')
     assert cookie_banner.is_displayed() is True
 
-    hide_cookie_banner(page)
+    hide_cookie_banner()
     assert cookie_banner.is_displayed() is False
 
     # reload the page and make sure the banner does not show
@@ -126,7 +126,7 @@ def test_study_filter_accordion_expands_showing_domains(live_server, selenium, s
 
     url = live_server.url + reverse('study-filter')
     selenium.get(url)
-    hide_cookie_banner(selenium)
+    hide_cookie_banner()
 
     accordions = selenium.find_elements_by_class_name("accordion-navigation")
     for accordion in accordions:
@@ -144,7 +144,7 @@ def test_study_explorer_shows_tabs_for_domain(live_server, selenium, setup_domai
 
     url = live_server.url + reverse('study-explorer')
     selenium.get(url)
-    hide_cookie_banner(selenium)
+    hide_cookie_banner()
 
     study_checkbox = selenium.find_element_by_id("id_study_1")
     if 'firefox' in selenium.capabilities['browserName']:
@@ -284,7 +284,7 @@ def test_explorer_page_contains_summary_and_variable_plot(live_server, selenium,
     study_id = Study.objects.get().id
     url = live_server.url + reverse('study-explorer') + '?study=%s' % study_id
     selenium.get(url)
-    hide_cookie_banner(selenium)
+    hide_cookie_banner()
 
     WebDriverWait(selenium, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "tabs")))
 
@@ -320,7 +320,7 @@ def test_study_explorer_new_update_sticky_is_working(live_server, selenium, setu
 
     url = live_server.url + reverse('study-explorer')
     selenium.get(url)
-    hide_cookie_banner(selenium)
+    hide_cookie_banner()
 
     sticky_menu = selenium.find_element_by_id("sticky-menu")
 
@@ -387,7 +387,7 @@ def test_explorer_page_summary_and_variable_plot_toggle_observations(live_server
     study_id = Study.objects.get().id
     url = live_server.url + reverse('study-explorer') + '?study=%s' % study_id
     selenium.get(url)
-    hide_cookie_banner(selenium)
+    hide_cookie_banner()
 
     WebDriverWait(selenium, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "tabs")))
 

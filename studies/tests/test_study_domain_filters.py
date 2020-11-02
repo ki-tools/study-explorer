@@ -217,7 +217,7 @@ def test_domain_filter_select_and_unselect_all(live_server, selenium, setup_doma
 
     url = live_server.url + reverse('study-filter')
     selenium.get(url)
-    hide_cookie_banner(selenium)
+    hide_cookie_banner()
 
     accordion = selenium.find_element_by_class_name("accordion-navigation")
     accordion.click()
