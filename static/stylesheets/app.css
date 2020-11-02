@@ -10534,3 +10534,37 @@ table.dataframe tbody tr td {
   text-decoration: none;
 }
 
+.cookie-banner {
+  display: none;
+  z-index: 999999;
+  position: fixed;
+  bottom: 0px;
+  left: 15%;
+  right: 15%;
+  width: 70%;
+  padding: 20px;
+  text-align: center;
+  color: #FFFFFF;
+  background-color: #333333;
+}
+.cookie-close {
+  margin-top: 20px;
+}
+
+.cookie-title {
+  font-size: x-large;
+}
+
+.cookie-content {
+  color: #DAD8D8;
+}
+
+.cookie-content a {
+  color: #DAD8D8;
+  text-decoration: underline;
+}
+
+.cookie-content a:hover {
+  color: #FFFFFF;
+  text-decoration: none;
+}
