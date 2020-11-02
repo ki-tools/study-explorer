@@ -212,11 +212,12 @@ def test_domain_category_filter_select_all_visible(live_server, selenium, setup_
             assert checkbox.get_property("checked") is False
 
 
-def test_domain_filter_select_and_unselect_all(live_server, selenium, setup_domain_and_load_data):
+def test_domain_filter_select_and_unselect_all(live_server, selenium, setup_domain_and_load_data, hide_cookie_banner):
     """Checks that select and unselect buttons work"""
 
     url = live_server.url + reverse('study-filter')
     selenium.get(url)
+    hide_cookie_banner(selenium)
 
     accordion = selenium.find_element_by_class_name("accordion-navigation")
     accordion.click()
