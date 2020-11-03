@@ -323,7 +323,7 @@ def test_study_explorer_new_update_sticky_is_working(live_server, selenium, setu
     StudyFactory.create_batch(20)
 
     # Mak sure the browser window is small enough so it has to scroll vertically.
-    selenium.set_window_size(1024, 400)
+    selenium.set_window_size(1024, 500)
 
     url = live_server.url + reverse('study-explorer')
     selenium.get(url)

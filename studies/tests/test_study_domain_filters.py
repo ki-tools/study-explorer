@@ -250,6 +250,9 @@ def test_domain_filter_new_update_sticky_is_working(live_server, selenium, setup
     no_update_text = "No new filters."
     update_text = "New filters have been selected. Click Apply to refresh studies."
 
+    # Mak sure the browser window is small enough so it has to scroll vertically.
+    selenium.set_window_size(1024, 500)
+
     url = live_server.url + reverse('study-filter')
     selenium.get(url)
     hide_cookie_banner()
