@@ -158,6 +158,10 @@ proxy_read_timeout      3600;
 ```
 - Restart nginx: `sudo service nginx reload`
 
+- Install the Lets Encrypt Plugin: `sudo dokku plugin:install https://github.com/dokku/dokku-letsencrypt.git`
+- Globally set the Lets Encrypt email address: `dokku config:set --global DOKKU_LETSENCRYPT_EMAIL=your@email.tld`
+- Schedule cron job to auto update SSL certificates: `dokku letsencrypt:cron-job --add`
+
 ## Create New App Instance
 
 Execute these commands on the Dokku server:
@@ -168,6 +172,7 @@ Execute these commands on the Dokku server:
 - Set the ENV variables: `dokku config:set se-<name> WEB_CONCURRENCY=4 ALLOWED_HOSTS=".kiglobalhealth.org,.hbgdki.org,.studyexplorer.io" SECRET_KEY="<your-secret-key>"`
 - Set the domain: `dokku domains:add se-<name> <name>.studyexplorer.io`
 - Import the database export: `dokku postgres:import se-<name>-db < se-<name>.dump`
+- Install the SSL Certificates: `dokku letsencrypt se-<name>`
 
 Execute these commands on your local system:
 
