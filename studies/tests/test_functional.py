@@ -71,14 +71,33 @@ def test_title_of_home_page_is_HBGD_Data_Store_Server(page):
     assert 'HBGD Data Store Server' in page.title
 
 
+def test_it_shows_the_cookie_banner(page):
+    cookie_banner = page.find_element_by_class_name('cookie-banner')
+    assert cookie_banner.is_displayed() is True
+
+
+def test_it_hides_the_cookie_banner(page, live_server, selenium, hide_cookie_banner):
+    cookie_banner = page.find_element_by_class_name('cookie-banner')
+    assert cookie_banner.is_displayed() is True
+
+    hide_cookie_banner()
+    assert cookie_banner.is_displayed() is False
+
+    # reload the page and make sure the banner does not show
+    selenium.get(live_server.url)
+    cookie_banner = selenium.find_element_by_class_name('cookie-banner')
+    assert cookie_banner.is_displayed() is False
+
+
 def test_admin_panel_redirect_if_no_studies(page):
     admin_panel = page.find_element_by_name('admin_panel')
     assert 'Admin Portal' in admin_panel.text
 
 
-def test_study_panels_on_home_even_if_no_domains(live_server, selenium, transactional_db):
+def test_study_panels_on_home_even_if_no_domains(live_server, selenium, transactional_db, hide_cookie_banner):
     StudyVariableFactory(studies=StudyFactory.create_batch(3))
     selenium.get(live_server.url)
+    hide_cookie_banner()
 
     panel = selenium.find_element_by_name('study-list_panel')
     assert 'Study List' in panel.text
@@ -87,8 +106,9 @@ def test_study_panels_on_home_even_if_no_domains(live_server, selenium, transact
     assert 'Study Filter' in panel.text
 
 
-def test_all_panels_on_home_if_data_loaded(live_server, selenium, setup_domain_and_load_data):
+def test_all_panels_on_home_if_data_loaded(live_server, selenium, setup_domain_and_load_data, hide_cookie_banner):
     selenium.get(live_server.url)
+    hide_cookie_banner()
 
     panel = selenium.find_element_by_name('study-list_panel')
     assert 'Study List' in panel.text
@@ -103,11 +123,12 @@ def test_all_panels_on_home_if_data_loaded(live_server, selenium, setup_domain_a
     assert 'Variable List' in panel.text
 
 
-def test_study_filter_accordion_expands_showing_domains(live_server, selenium, setup_domain_and_load_data):
+def test_study_filter_accordion_expands_showing_domains(live_server, selenium, setup_domain_and_load_data, hide_cookie_banner):
     """Checks that clicking the accordion expands the domain filter"""
 
     url = live_server.url + reverse('study-filter')
     selenium.get(url)
+    hide_cookie_banner()
 
     accordions = selenium.find_elements_by_class_name("accordion-navigation")
     for accordion in accordions:
@@ -120,11 +141,12 @@ def test_study_filter_accordion_expands_showing_domains(live_server, selenium, s
     assert domain_search.is_displayed()
 
 
-def test_study_explorer_shows_tabs_for_domain(live_server, selenium, setup_domain_and_load_data):
+def test_study_explorer_shows_tabs_for_domain(live_server, selenium, setup_domain_and_load_data, hide_cookie_banner):
     """Checks that tabs are shown for the domains"""
 
     url = live_server.url + reverse('study-explorer')
     selenium.get(url)
+    hide_cookie_banner()
 
     study_checkbox = selenium.find_element_by_id("id_study_1")
     if 'firefox' in selenium.capabilities['browserName']:
@@ -160,12 +182,13 @@ def test_study_explorer_shows_tabs_for_domain(live_server, selenium, setup_domai
     assert sample_domain_by_age_tab.is_displayed() is True
 
 
-def test_study_explorer_autocomplete_returns_tabs(live_server, selenium, setup_domain_and_load_data):
+def test_study_explorer_autocomplete_returns_tabs(live_server, selenium, setup_domain_and_load_data, hide_cookie_banner):
     study_id = "CPP"
     n = 0
 
     url = live_server.url + reverse('study-explorer')
     selenium.get(url)
+    hide_cookie_banner()
 
     study_search = selenium.find_element_by_id("id_search")
 
@@ -187,13 +210,14 @@ def test_study_explorer_autocomplete_returns_tabs(live_server, selenium, setup_d
     assert tabs.is_displayed()
 
 
-def test_filter_by_variable_code_returns_variable_to_field(live_server, selenium, setup_domain_and_load_data):
+def test_filter_by_variable_code_returns_variable_to_field(live_server, selenium, setup_domain_and_load_data, hide_cookie_banner):
     code = "RELTIVE"
     mother = "Mother"
     n = 0
 
     url = live_server.url + reverse('variable-list', kwargs={"domain_code": code})
     selenium.get(url)
+    hide_cookie_banner()
 
     variable_search = selenium.find_element_by_id("id_variable")
 
@@ -210,20 +234,22 @@ def test_filter_by_variable_code_returns_variable_to_field(live_server, selenium
     assert variable_search.get_attribute('value') == "Mother"
 
 
-def test_pagination_at_top_of_page(live_server, selenium, setup_domain_and_load_data):
+def test_pagination_at_top_of_page(live_server, selenium, setup_domain_and_load_data, hide_cookie_banner):
     code = "RELTIVE"
     url = live_server.url + reverse('variable-list', kwargs={"domain_code": code})
     selenium.get(url)
+    hide_cookie_banner()
 
     assert selenium.find_element_by_class_name("pagination")
 
 
-def test_filter_to_explorer_transition(live_server, selenium, setup_domain_and_load_data):
+def test_filter_to_explorer_transition(live_server, selenium, setup_domain_and_load_data, hide_cookie_banner):
     var_id = Variable.objects.get(domain__code='RELTIVE', label='Child').id
     url = live_server.url + reverse('study-filter') + '?RELTIVE=%s' % var_id
     explorer_url = live_server.url + reverse('study-explorer') + '?RELTIVE=%s' % var_id
 
     selenium.get(url)
+    hide_cookie_banner()
 
     chevron = selenium.find_element_by_class_name("fa-chevron-right")
     chevron.click()
@@ -257,13 +283,14 @@ def test_filter_to_explorer_transition(live_server, selenium, setup_domain_and_l
     assert back_link.get_attribute('href') == url
 
 
-def test_explorer_page_contains_summary_and_variable_plot(live_server, selenium, setup_domain_and_load_data):
+def test_explorer_page_contains_summary_and_variable_plot(live_server, selenium, setup_domain_and_load_data, hide_cookie_banner):
     # Fairly crude test looking for:
     # - the plot titles.
     # - height of bk-root divs as a proxy for whether bokeh has rendered successfully
     study_id = Study.objects.get().id
     url = live_server.url + reverse('study-explorer') + '?study=%s' % study_id
     selenium.get(url)
+    hide_cookie_banner()
 
     WebDriverWait(selenium, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "tabs")))
 
@@ -276,12 +303,13 @@ def test_explorer_page_contains_summary_and_variable_plot(live_server, selenium,
             assert root.size["height"] >= 200
 
 
-def test_filter_page_contains_summary_plot(live_server, selenium, setup_domain_and_load_data):
+def test_filter_page_contains_summary_plot(live_server, selenium, setup_domain_and_load_data, hide_cookie_banner):
     # Fairly crude test looking for:
     # - the plot titles.
     # - height of bk-root divs as a proxy for whether bokeh has rendered successfully
     url = live_server.url + reverse('study-filter')
     selenium.get(url)
+    hide_cookie_banner()
 
     assert "Number of observations by domain" in selenium.page_source
 
@@ -289,16 +317,17 @@ def test_filter_page_contains_summary_plot(live_server, selenium, setup_domain_a
     assert root.size["height"] >= 200
 
 
-def test_study_explorer_new_update_sticky_is_working(live_server, selenium, setup_domain_and_load_data):
+def test_study_explorer_new_update_sticky_is_working(live_server, selenium, setup_domain_and_load_data, hide_cookie_banner):
     no_update_text = "No new filters."
     update_text = "New filters have been selected. Click Apply to refresh studies."
     StudyFactory.create_batch(20)
 
     # Mak sure the browser window is small enough so it has to scroll vertically.
-    selenium.set_window_size(1024, 300)
+    selenium.set_window_size(1024, 500)
 
     url = live_server.url + reverse('study-explorer')
     selenium.get(url)
+    hide_cookie_banner()
 
     sticky_menu = selenium.find_element_by_id("sticky-menu")
 
@@ -318,12 +347,13 @@ def test_study_explorer_new_update_sticky_is_working(live_server, selenium, setu
     assert sticky_menu.text == update_text
 
 
-def test_study_explorer_new_update_works_on_autocomplete_select(live_server, selenium, setup_domain_and_load_data):
+def test_study_explorer_new_update_works_on_autocomplete_select(live_server, selenium, setup_domain_and_load_data, hide_cookie_banner):
     no_update_text = "No new filters."
     update_text = "New filters have been selected. Click Apply to refresh studies."
 
     url = live_server.url + reverse('study-explorer')
     selenium.get(url)
+    hide_cookie_banner()
 
     sticky_menu = selenium.find_element_by_id("sticky-menu")
     assert sticky_menu.text == no_update_text
@@ -335,12 +365,13 @@ def test_study_explorer_new_update_works_on_autocomplete_select(live_server, sel
     assert sticky_menu.text == update_text
 
 
-def test_filter_page_summary_plot_toggles_observations(live_server, selenium, setup_domain_and_load_data):
+def test_filter_page_summary_plot_toggles_observations(live_server, selenium, setup_domain_and_load_data, hide_cookie_banner):
     # Tests whether the bokeh observations/subjects toggle buttons work
     # - Checks if toggling the button changes the title
     # - Cannot directly check heatmap and colormapper changes
     url = live_server.url + reverse('study-filter')
     selenium.get(url)
+    hide_cookie_banner()
 
     # Check original title is correct
     title = selenium.find_element_by_class_name("bk-annotation")
@@ -360,11 +391,12 @@ def test_filter_page_summary_plot_toggles_observations(live_server, selenium, se
     assert title.text == "Number of observations by domain"
 
 
-def test_explorer_page_summary_and_variable_plot_toggle_observations(live_server, selenium, setup_domain_and_load_data):
+def test_explorer_page_summary_and_variable_plot_toggle_observations(live_server, selenium, setup_domain_and_load_data, hide_cookie_banner):
     # Tests whether the bokeh observations/subjects toggle buttons work
     study_id = Study.objects.get().id
     url = live_server.url + reverse('study-explorer') + '?study=%s' % study_id
     selenium.get(url)
+    hide_cookie_banner()
 
     WebDriverWait(selenium, 10).until(EC.presence_of_element_located((By.CLASS_NAME, "tabs")))
 

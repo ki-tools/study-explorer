@@ -41,11 +41,12 @@ def setup_domain_and_load_data(transactional_db):
     call_command('load_idx', sample_csv)
 
 
-def test_accordion_expands_showing_domains(live_server, selenium, setup_domain_and_load_data):
+def test_accordion_expands_showing_domains(live_server, selenium, setup_domain_and_load_data, hide_cookie_banner):
     """Checks that clicking the accordion expands the domain filter"""
 
     url = live_server.url + reverse('study-filter')
     selenium.get(url)
+    hide_cookie_banner()
 
     accordion = selenium.find_element_by_class_name("accordion-navigation")
     accordion.click()
@@ -93,7 +94,7 @@ def _test_autocomplete_search(selenium, category, code, label, search, completio
             assert label_span.text == label
 
 
-def test_domain_autocomplete_filtering_by_code(live_server, selenium, setup_domain_and_load_data):
+def test_domain_autocomplete_filtering_by_code(live_server, selenium, setup_domain_and_load_data, hide_cookie_banner):
     """Checks that autocomplete filtering works when filtering by code"""
 
     category = 'Biochemistry'
@@ -102,11 +103,12 @@ def test_domain_autocomplete_filtering_by_code(live_server, selenium, setup_doma
 
     url = live_server.url + reverse('study-filter')
     selenium.get(url)
+    hide_cookie_banner()
 
     _test_autocomplete_search(selenium, category, code, label, code, [code, label])
 
 
-def test_domain_autocomplete_filtering_by_label(live_server, selenium, setup_domain_and_load_data):
+def test_domain_autocomplete_filtering_by_label(live_server, selenium, setup_domain_and_load_data, hide_cookie_banner):
     """Checks that autocomplete filtering works when filtering by code"""
 
     category = 'Biochemistry'
@@ -115,17 +117,19 @@ def test_domain_autocomplete_filtering_by_label(live_server, selenium, setup_dom
 
     url = live_server.url + reverse('study-filter')
     selenium.get(url)
+    hide_cookie_banner()
 
     _test_autocomplete_search(selenium, category, code, label, label, [label])
 
 
-def test_domain_autocomplete_filtering_multiple(live_server, selenium, setup_domain_and_load_data):
+def test_domain_autocomplete_filtering_multiple(live_server, selenium, setup_domain_and_load_data, hide_cookie_banner):
     """Checks that autocomplete filtering works and filters table"""
 
     valid_completions = ['ARDBODY', 'ARDNECKL', 'ARDNECKT']
 
     url = live_server.url + reverse('study-filter')
     selenium.get(url)
+    hide_cookie_banner()
 
     accordion = selenium.find_element_by_class_name("accordion-navigation")
     accordion.click()
@@ -153,7 +157,7 @@ def test_domain_autocomplete_filtering_multiple(live_server, selenium, setup_dom
             assert label_span.text in valid_completions
 
 
-def test_domain_category_filtering(live_server, selenium, setup_domain_and_load_data):
+def test_domain_category_filtering(live_server, selenium, setup_domain_and_load_data, hide_cookie_banner):
     """Checks that filtering by domain category filters the table"""
 
     category = 'Hematology'
@@ -162,6 +166,7 @@ def test_domain_category_filtering(live_server, selenium, setup_domain_and_load_
 
     url = live_server.url + reverse('study-filter')
     selenium.get(url)
+    hide_cookie_banner()
 
     accordion = selenium.find_element_by_class_name("accordion-navigation")
     accordion.click()
@@ -183,12 +188,13 @@ def test_domain_category_filtering(live_server, selenium, setup_domain_and_load_
             assert label_span.text in valid_labels
 
 
-def test_domain_category_filter_select_all_visible(live_server, selenium, setup_domain_and_load_data):
+def test_domain_category_filter_select_all_visible(live_server, selenium, setup_domain_and_load_data, hide_cookie_banner):
     """Check that select all button only selects visible entries in the domain table"""
     category = 'Hematology'
 
     url = live_server.url + reverse('study-filter')
     selenium.get(url)
+    hide_cookie_banner()
 
     accordion = selenium.find_element_by_class_name("accordion-navigation")
     accordion.click()
@@ -212,11 +218,12 @@ def test_domain_category_filter_select_all_visible(live_server, selenium, setup_
             assert checkbox.get_property("checked") is False
 
 
-def test_domain_filter_select_and_unselect_all(live_server, selenium, setup_domain_and_load_data):
+def test_domain_filter_select_and_unselect_all(live_server, selenium, setup_domain_and_load_data, hide_cookie_banner):
     """Checks that select and unselect buttons work"""
 
     url = live_server.url + reverse('study-filter')
     selenium.get(url)
+    hide_cookie_banner()
 
     accordion = selenium.find_element_by_class_name("accordion-navigation")
     accordion.click()
@@ -239,12 +246,16 @@ def test_domain_filter_select_and_unselect_all(live_server, selenium, setup_doma
         assert checkbox.get_property("checked") is False
 
 
-def test_domain_filter_new_update_sticky_is_working(live_server, selenium, setup_domain_and_load_data):
+def test_domain_filter_new_update_sticky_is_working(live_server, selenium, setup_domain_and_load_data, hide_cookie_banner):
     no_update_text = "No new filters."
     update_text = "New filters have been selected. Click Apply to refresh studies."
 
+    # Mak sure the browser window is small enough so it has to scroll vertically.
+    selenium.set_window_size(1024, 500)
+
     url = live_server.url + reverse('study-filter')
     selenium.get(url)
+    hide_cookie_banner()
 
     accordion = selenium.find_element_by_class_name("accordion-navigation")
     accordion.click()
