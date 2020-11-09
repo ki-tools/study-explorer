@@ -20,4 +20,5 @@ def export_vars(request):
     data = {}
     data['CONTINUOUS_INTEGRATION'] = os.environ.get("CONTINUOUS_INTEGRATION", False)
     data['DEBUG'] = settings.DEBUG
+    data['GA_MEASUREMENT_ID'] = os.environ.get('GA_MEASUREMENT_ID', None)
     return data

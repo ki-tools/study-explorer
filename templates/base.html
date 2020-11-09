@@ -5,7 +5,16 @@
 <html>
 <head>
   <meta charset="utf-8">
-
+    {% if GA_MEASUREMENT_ID %}
+      <!-- Global site tag (gtag.js) - Google Analytics -->
+      <script async src="https://www.googletagmanager.com/gtag/js?id={{ GA_MEASUREMENT_ID }}"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{{ GA_MEASUREMENT_ID }}');
+      </script>
+    {% endif %}
   <title>HBGD Data Store Server</title>
   <meta name="description" content="HBGD Data Store Server - Explore HBGD datasets">
   <meta name="author" content="Continuum Analytics">
