@@ -4,7 +4,7 @@ colorcet==0.9.1
 crispy-forms-foundation==0.5.4
 Django==1.10.5
 django-crispy-forms==1.6.1
-django-debug-toolbar==1.6
+django-debug-toolbar==1.11.1
 django-docs==0.2.1
 django-extensions==1.7.5
 django-tables2==1.2.6
