@@ -156,7 +156,10 @@ proxy_connect_timeout   3600;
 proxy_send_timeout      3600;
 proxy_read_timeout      3600;
 ```
-- Restart nginx: `sudo service nginx reload`
+- Change the `proxy_read_timeout` from `60s` to `60m` in `/home/dokku/app-name/nginx.config`.
+
+- Restart nginx: `sudo systemctl restart nginx`
+
 
 - Install the Lets Encrypt Plugin: `sudo dokku plugin:install https://github.com/dokku/dokku-letsencrypt.git`
 - Globally set the Lets Encrypt email address: `dokku config:set --global DOKKU_LETSENCRYPT_EMAIL=your@email.tld`
