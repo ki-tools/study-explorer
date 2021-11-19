@@ -223,6 +223,7 @@ class StudyVariable(models.Model):
             study_var, _ = self.objects.get_or_create(study_field=obj.study_field,
                                                       value=str(v))
             study_var.studies.add(*[s for s in obj.studies.all()])
+        obj.delete()
 
     @classmethod
     def get_dataframe(self, **kwargs):

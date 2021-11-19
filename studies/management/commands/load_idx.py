@@ -126,8 +126,11 @@ def get_valid_qualifiers(columns):
             raise Exception('Qualifier code must match only one column per file.')
         qual_code = cols[0]
         suffix_re = qual_code + r'(\w{1,})'
-        suffix = [re.match(suffix_re, col).group(1) for col in columns
-                  if re.match(suffix_re, col)][0]
+        potential_suffixes = [re.match(suffix_re, col).group(1) for col in columns
+                              if re.match(suffix_re, col)]
+        suffix = ''
+        if len(potential_suffixes) > 0:
+            suffix = potential_suffixes[0]
         valid_qualifiers.append((qual, qual_code, suffix))
     return valid_qualifiers
 
