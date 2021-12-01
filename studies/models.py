@@ -86,10 +86,11 @@ class StudyField(models.Model):
     def save(self, **kwargs):
         if not self.label:
             self.label = self.field_name.replace('_', ' ')
+        self.field_name = self.field_name.upper()
+        super(StudyField, self).save()
         if self.field_type == 'list':
             for obj in StudyVariable.objects.filter(study_field=self):
-                StudyVariable.split_list(obj)
-        super(StudyField, self).save()
+                obj.split_list()
 
     def __str__(self):
         return self.label
@@ -204,25 +205,35 @@ class StudyVariable(models.Model):
     def save(self, *args, **kwargs):
         super(StudyVariable, self).save(*args, **kwargs)
         if self.study_field.field_type == 'list':
-            StudyVariable.split_list(self)
+            self.split_list()
 
-    @classmethod
-    def split_list(self, obj, sep=','):
+    def split_list(self, sep=','):
         """
         Creates study variables by splitting a study variable with field type
-        list into separate study variable items and deleting old study variable.
+        list into separate study variable items.
 
         Parameters:
-            obj (object of type StudyVariable)
             sep (list separator - default: ',')
         """
-        if sep not in obj.value:
+        if sep not in self.value:
             return
-        for val in obj.value.split(sep):
-            v = val.replace(' ', '')
-            study_var, _ = self.objects.get_or_create(study_field=obj.study_field,
-                                                      value=str(v))
-            study_var.studies.add(*[s for s in obj.studies.all()])
+
+        studies = [s for s in self.studies.all()]
+        study_field = self.study_field
+
+        values = [v.replace(' ', '') for v in self.value.split(sep)]
+        first_val = values.pop(0)
+        existing_study_var = StudyVariable.objects.filter(study_field=self.study_field, value=first_val).first()
+        if existing_study_var and existing_study_var.id != self.id:
+            studies += [s for s in existing_study_var.studies.all()]
+            existing_study_var.delete()
+
+        self.value = first_val
+        self.save()
+
+        for val in values:
+            study_var, _ = StudyVariable.objects.get_or_create(study_field=study_field, value=val)
+            study_var.studies.add(*studies)
 
     @classmethod
     def get_dataframe(self, **kwargs):
@@ -283,6 +294,11 @@ class Domain(models.Model):
 
     def __str__(self):
         return self.code
+
+    def save(self, *args, **kwargs):
+        self.code = self.code.upper()
+        super(Domain, self).save(*args, **kwargs)
+
 
 
 class FilterManager(models.Manager):

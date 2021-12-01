@@ -204,12 +204,12 @@ def test_study_variable_split_list(sep, list_value):
     var = StudyVariableFactory(studies=studies[:2], study_field=field, value=list_value)
     assert StudyVariable.objects.all().count() == 3
     field.field_type = 'list'
-    StudyVariable.split_list(var, sep=sep)
-    assert StudyVariable.objects.all().count() == 5
+    var.split_list(sep=sep)
+    assert StudyVariable.objects.all().count() == 4
     values = list(StudyVariable.objects.all()
                                .order_by('value')
                                .values_list('value', flat=True))
-    assert values == ['BLG', 'CAN', 'MEX', list_value, 'USA']
+    assert values == ['BLG', 'CAN', 'MEX', 'USA']
 
 
 @pytest.mark.django_db
@@ -224,15 +224,15 @@ def __setup_study_variable_data():
     study_2 = StudyFactory(study_id='ki-114')
     study_3 = StudyFactory(study_id='CPT')
     StudyVariableFactory(studies=[study_1],
-                         study_field__field_name='start_year',
+                         study_field__field_name='START_YEAR',
                          study_field__label='Start Year',
                          value='1956.0')
     StudyVariableFactory(studies=[study_2, study_3],
-                         study_field__field_name='start_year',
+                         study_field__field_name='START_YEAR',
                          study_field__label='Start Year',
                          value='1913.0')
     StudyVariableFactory(studies=[study_1, study_3],
-                         study_field__field_name='stop_year',
+                         study_field__field_name='STOP_YEAR',
                          study_field__label='Stop Year',
                          value='2016.0')
 
@@ -240,7 +240,7 @@ def __setup_study_variable_data():
 @pytest.mark.django_db
 def test_study_variable_get_dataframe_one_column_by_study_field():
     __setup_study_variable_data()
-    study_fields = StudyField.objects.filter(field_name='start_year')
+    study_fields = StudyField.objects.filter(field_name='START_YEAR')
     df = StudyVariable.get_dataframe(study_field__in=study_fields)
     assert list(df.columns) == ['Start Year']
     assert list(df.index) == ['CPT', 'ki-103', 'ki-114']
@@ -250,7 +250,7 @@ def test_study_variable_get_dataframe_one_column_by_study_field():
 @pytest.mark.django_db
 def test_study_variable_get_dataframe_column_contains_null():
     __setup_study_variable_data()
-    study_fields = StudyField.objects.filter(field_name__in=['start_year', 'stop_year'])
+    study_fields = StudyField.objects.filter(field_name__in=['START_YEAR', 'STOP_YEAR'])
     df = StudyVariable.get_dataframe(study_field__in=study_fields)
     assert sorted(list(df.columns)) == sorted(['Start Year', 'Stop Year'])
     assert list(df.index) == ['CPT', 'ki-103', 'ki-114']
@@ -261,8 +261,8 @@ def test_study_variable_get_dataframe_column_contains_null():
 @pytest.mark.django_db
 def test_study_variable_get_dataframe_where_field_not_in_study_variables():
     __setup_study_variable_data()
-    StudyFieldFactory(field_name='foo', label='FOO')
-    study_fields = StudyField.objects.filter(field_name__in=['foo'])
+    StudyFieldFactory(field_name='FOO', label='FOO')
+    study_fields = StudyField.objects.filter(field_name__in=['FOO'])
     df = StudyVariable.get_dataframe(study_field__in=study_fields)
     assert df is None
 
@@ -270,8 +270,8 @@ def test_study_variable_get_dataframe_where_field_not_in_study_variables():
 @pytest.mark.django_db
 def test_study_variable_get_dataframe_where_one_int_field_not_in_study_variables():
     __setup_study_variable_data()
-    StudyFieldFactory(field_name='foo', label='FOO', field_type='int')
-    study_fields = StudyField.objects.filter(field_name__in=['foo', 'start_year'])
+    StudyFieldFactory(field_name='FOO', label='FOO', field_type='int')
+    study_fields = StudyField.objects.filter(field_name__in=['FOO', 'START_YEAR'])
     df = StudyVariable.get_dataframe(study_field__in=study_fields)
     assert sorted(list(df.columns)) == sorted(['Start Year'])
     assert list(df.index) == ['CPT', 'ki-103', 'ki-114']
@@ -280,10 +280,10 @@ def test_study_variable_get_dataframe_where_one_int_field_not_in_study_variables
 
 @pytest.mark.django_db
 def test_study_variable_get_dataframe_with_field_type_int_reformats_values_to_drop_trailing_zeros():
-    StudyFieldFactory(field_name='stop_year', label='Stop Year', field_type='int')
+    StudyFieldFactory(field_name='STOP_YEAR', label='Stop Year', field_type='int')
 
     __setup_study_variable_data()
-    study_fields = StudyField.objects.filter(field_name__in=['start_year', 'stop_year'])
+    study_fields = StudyField.objects.filter(field_name__in=['START_YEAR', 'STOP_YEAR'])
     assert StudyVariable.objects.filter(study_field__field_type='int').count() == 1
 
     df = StudyVariable.get_dataframe(study_field__in=study_fields)
@@ -295,10 +295,10 @@ def test_study_variable_get_dataframe_with_field_type_int_reformats_values_to_dr
 
 @pytest.mark.django_db
 def test_study_variable_get_dataframe_with_field_type_float_changes_dtype_to_float():
-    StudyFieldFactory(field_name='stop_year', label='Stop Year', field_type='float')
+    StudyFieldFactory(field_name='STOP_YEAR', label='Stop Year', field_type='float')
 
     __setup_study_variable_data()
-    study_fields = StudyField.objects.filter(field_name__in=['start_year', 'stop_year'])
+    study_fields = StudyField.objects.filter(field_name__in=['START_YEAR', 'STOP_YEAR'])
     assert StudyVariable.objects.filter(study_field__field_type='float').count() == 1
 
     df = StudyVariable.get_dataframe(study_field__in=study_fields)
@@ -311,7 +311,7 @@ def test_study_variable_get_dataframe_with_field_type_float_changes_dtype_to_flo
 @pytest.mark.django_db
 def test_study_variable_get_dataframe_one_row_by_study():
     __setup_study_variable_data()
-    study_fields = StudyField.objects.filter(field_name__in=['start_year', 'stop_year'])
+    study_fields = StudyField.objects.filter(field_name__in=['START_YEAR', 'STOP_YEAR'])
     df = StudyVariable.get_dataframe(studies__study_id='ki-103', study_field__in=study_fields)
     assert sorted(list(df.columns)) == sorted(['Start Year', 'Stop Year'])
     assert list(df.index) == ['ki-103']
@@ -322,7 +322,7 @@ def test_study_variable_get_dataframe_one_row_by_study():
 @pytest.mark.django_db
 def test_study_variable_get_dataframe_two_rows_by_study_id():
     __setup_study_variable_data()
-    study_fields = StudyField.objects.filter(field_name__in=['start_year', 'stop_year'])
+    study_fields = StudyField.objects.filter(field_name__in=['START_YEAR', 'STOP_YEAR'])
     df = StudyVariable.get_dataframe(studies__study_id__in=['ki-103', 'ki-114'],
                                      study_field__in=study_fields)
     assert sorted(list(df.columns)) == sorted(['Start Year', 'Stop Year'])
@@ -333,17 +333,17 @@ def test_study_variable_get_dataframe_two_rows_by_study_id():
 
 @pytest.mark.django_db
 def test_study_variable_get_dataframe_field_type_list_uses_longest_value():
-    field = StudyFieldFactory(field_name='country', field_type="list")
+    field = StudyFieldFactory(field_name='COUNTRY', field_type="list")
     studies = StudyFactory.create_batch(4)
 
     StudyVariableFactory(studies=studies[2:], study_field=field, value="USA")
     StudyVariableFactory(studies=studies[:1], study_field=field, value="MEX, CAN, USA")
 
-    assert StudyVariable.objects.all().count() == 4
+    assert StudyVariable.objects.all().count() == 3
     df = StudyVariable.get_dataframe(
-        study_field__in=StudyField.objects.filter(field_name='country'))
-    assert list(df.columns) == ['country']
-    assert list(df.values) == ['MEX, CAN, USA', 'USA', 'USA']
+        study_field__in=StudyField.objects.filter(field_name='COUNTRY'))
+    assert list(df.columns) == ['COUNTRY']
+    assert list(df.values) == ['MEX', 'USA', 'USA']
 
 
 @pytest.mark.django_db
@@ -416,8 +416,8 @@ def test_study_filter_without_label_grabs_label_from_study_field():
 
 @pytest.mark.django_db()
 def test_study_filter_name_is_study_field_field_name():
-    filt = FilterFactory(study_field__field_name='start_year', domain=None)
-    assert filt.name == 'start_year'
+    filt = FilterFactory(study_field__field_name='START_YEAR', domain=None)
+    assert filt.name == 'START_YEAR'
 
 
 @pytest.mark.django_db()
@@ -453,7 +453,7 @@ def test_filter_qualifier_filter_type():
 @pytest.mark.django_db()
 def test_filter_get_values_on_study_filter():
     __setup_study_variable_data()
-    filt = FilterFactory(domain=None, study_field__field_name='start_year')
+    filt = FilterFactory(domain=None, study_field__field_name='START_YEAR')
 
     assert filt.get_values() == ['1913.0', '1956.0']
 
@@ -474,7 +474,7 @@ def test_filter_get_values_on_non_qualifier_domain_filter():
 
 @pytest.mark.django_db
 def test_filter_get_values_on_qualifer_domain_filter():
-    domain = DomainFactory(code='foo', is_qualifier=True)
+    domain = DomainFactory(code='FOO', is_qualifier=True)
     variable1 = VariableFactory(domain=domain, code='0', label='aaa')
     variable2 = VariableFactory(domain=domain, code='2', label='bbb')
     variable3 = VariableFactory(domain=domain, code='1', label='ccc')
@@ -490,7 +490,7 @@ def test_filter_get_values_on_qualifer_domain_filter():
 @pytest.mark.parametrize("pass_values_kwarg", [(True), (False)])
 def test_filter_get_choices_on_study_filter(pass_values_kwarg):
     __setup_study_variable_data()
-    filt = FilterFactory(domain=None, study_field__field_name='start_year')
+    filt = FilterFactory(domain=None, study_field__field_name='START_YEAR')
 
     values = filt.get_values() if pass_values_kwarg else None
     # note that studies are sorted by studyvariable__value
@@ -501,7 +501,7 @@ def test_filter_get_choices_on_study_filter(pass_values_kwarg):
 @pytest.mark.django_db
 @pytest.mark.parametrize("pass_values_kwarg", [(True), (False)])
 def test_filter_get_choices_from_non_qualifier_domain_filter(pass_values_kwarg):
-    domain = DomainFactory(code='foo', is_qualifier=False)
+    domain = DomainFactory(code='FOO', is_qualifier=False)
     VariableFactory(domain=domain, code='ZZZ', label='aaa')
     VariableFactory(domain=domain, code='YYY', label='ccc')
     VariableFactory(domain=domain, code='XXX', label='bbb')
@@ -515,7 +515,7 @@ def test_filter_get_choices_from_non_qualifier_domain_filter(pass_values_kwarg):
 @pytest.mark.django_db
 @pytest.mark.parametrize("pass_values_kwarg", [(True), (False)])
 def test_filter_get_counts_study_no_active_filters(rf, pass_values_kwarg):
-    field = StudyFieldFactory(field_name='study_type')
+    field = StudyFieldFactory(field_name='STUDY_TYPE')
     studies = StudyFactory.create_batch(4)
 
     StudyVariableFactory(studies=studies[:2], study_field=field, value="A")
@@ -532,19 +532,19 @@ def test_filter_get_counts_study_no_active_filters(rf, pass_values_kwarg):
 
 @pytest.mark.django_db
 def test_filter_get_counts_study_no_active_filters_with_field_type_list(rf):
-    field = StudyFieldFactory(field_name='country')
+    field = StudyFieldFactory(field_name='COUNTRY')
     studies = StudyFactory.create_batch(4)
     StudyVariableFactory(studies=studies[2:], study_field=field, value="USA")
     StudyVariableFactory(studies=studies[:2], study_field=field, value="CAN, MEX, USA")
     field.field_type = "list"
     field.save()
-    assert StudyVariable.objects.all().count() == 4
+    assert StudyVariable.objects.all().count() == 3
     filt = FilterFactory(study_field=field, domain=None)
 
     request = rf.get(reverse('study-filter'))
 
     # note that studies are sorted by `studyvariable__value`
-    assert filt.get_counts(request) == [2, 2, 2, 4]
+    assert filt.get_counts(request) == [2, 2, 4]
 
 
 @pytest.mark.django_db
@@ -566,8 +566,8 @@ def test_filter_get_counts_study_with_active_filter_same_as_field_filter(rf):
 
 @pytest.mark.django_db
 def test_filter_get_counts_study_with_active_filter_different_from_field_filter(rf):
-    field = StudyFieldFactory(field_name='study_type')
-    field2 = StudyFieldFactory(field_name='intervention_type')
+    field = StudyFieldFactory(field_name='STUDY_TYPE')
+    field2 = StudyFieldFactory(field_name='INTERVENTION_TYPE')
 
     study = StudyFactory()
     study2 = StudyFactory()
@@ -580,7 +580,7 @@ def test_filter_get_counts_study_with_active_filter_different_from_field_filter(
     filt = FilterFactory(study_field=field, domain=None)
     FilterFactory(study_field=field2, domain=None)
 
-    get_params = {'intervention_type': [var1.id]}
+    get_params = {'INTERVENTION_TYPE': [var1.id]}
     request = rf.get(reverse('study-filter'), data=get_params)
 
     # note that studies are sorted by `study_type`
@@ -683,7 +683,7 @@ def test_filter_get_categories_from_domain_with_categories():
 
 @pytest.mark.django_db
 def test_filter_get_selections_with_checkbox_widget(rf):
-    field = StudyFieldFactory(field_name='study_type')
+    field = StudyFieldFactory(field_name='STUDY_TYPE')
 
     var1 = StudyVariableFactory(study_field=field, value="D")
     var2 = StudyVariableFactory(study_field=field, value="A")
@@ -691,7 +691,7 @@ def test_filter_get_selections_with_checkbox_widget(rf):
 
     filt = FilterFactory(study_field=field, domain=None, widget='checkbox')
 
-    get_params = {'study_type': [var2.id, var1.id]}
+    get_params = {'STUDY_TYPE': [var2.id, var1.id]}
     request = rf.get(reverse('study-filter'), data=get_params)
 
     assert filt.get_selections(request.GET) == [str(var2.id), str(var1.id)]
@@ -715,7 +715,7 @@ def test_filter_get_selections_with_discrete_slider_widget(rf):
 
 @pytest.mark.django_db
 def test_filter_get_selections_with_double_slider_widget(rf):
-    field = StudyFieldFactory(field_name='start_year')
+    field = StudyFieldFactory(field_name='START_YEAR')
 
     StudyVariableFactory(study_field=field, value='1991.0')
     StudyVariableFactory(study_field=field, value='1992.0')
@@ -724,7 +724,7 @@ def test_filter_get_selections_with_double_slider_widget(rf):
 
     filt = FilterFactory(study_field=field, domain=None, widget='double slider')
 
-    get_params = {'start_year': '1992.0;1993.0'}
+    get_params = {'START_YEAR': '1992.0;1993.0'}
     request = rf.get(reverse('study-filter'), data=get_params)
 
     assert filt.get_selections(request.GET) == ['1992.0', '1993.0']
@@ -732,14 +732,14 @@ def test_filter_get_selections_with_double_slider_widget(rf):
 
 @pytest.mark.django_db
 def test_filter_filter_queryset_with_study_field_filter_with_checkbox_widget(rf):
-    field = StudyFieldFactory(field_name='study_type')
+    field = StudyFieldFactory(field_name='STUDY_TYPE')
 
     variable = StudyVariableFactory(study_field=field, value="A", studies=[StudyFactory()])
     StudyVariableFactory(study_field=field, value="B", studies=[StudyFactory()])
 
     filt = FilterFactory(study_field=field, domain=None, widget='checkbox')
 
-    get_params = {'study_type': [variable.id]}
+    get_params = {'STUDY_TYPE': [variable.id]}
     request = rf.get(reverse('study-filter'), data=get_params)
 
     studies = Study.objects.all()
@@ -755,7 +755,7 @@ def test_filter_filter_queryset_with_study_field_filter_with_checkbox_widget(rf)
     ('1993.0', False),
     ])
 def test_filter_double_slider_is_full_range(rf, to_value, result):
-    field = StudyFieldFactory(field_name='start_year')
+    field = StudyFieldFactory(field_name='START_YEAR')
 
     StudyVariableFactory(study_field=field, value='1991.0')
     StudyVariableFactory(study_field=field, value='1992.0')
@@ -786,7 +786,7 @@ def test_filter_discrete_slider_is_full_range(rf, to_value, result):
 
 @pytest.mark.django_db
 def test_filter_filter_queryset_with_study_field_filter_with_int_double_slider_widget(rf):
-    field = StudyFieldFactory(field_name='start_year')
+    field = StudyFieldFactory(field_name='START_YEAR')
     studies = StudyFactory.create_batch(4)
 
     StudyVariableFactory(study_field=field, value='1991.0', studies=studies[:1])
@@ -796,7 +796,7 @@ def test_filter_filter_queryset_with_study_field_filter_with_int_double_slider_w
 
     filt = FilterFactory(study_field=field, domain=None, widget='double slider')
 
-    get_params = {'start_year': ['1992;1993']}
+    get_params = {'START_YEAR': ['1992;1993']}
 
     request = rf.get(reverse('study-filter'), data=get_params)
 
@@ -808,7 +808,7 @@ def test_filter_filter_queryset_with_study_field_filter_with_int_double_slider_w
 
 @pytest.mark.django_db
 def test_filter_filter_queryset_with_study_field_filter_with_float_double_slider_widget(rf):
-    field = StudyFieldFactory(field_name='distance')
+    field = StudyFieldFactory(field_name='DISTANCE')
     studies = StudyFactory.create_batch(4)
 
     StudyVariableFactory(study_field=field, value='3.5', studies=studies[:1])
@@ -818,7 +818,7 @@ def test_filter_filter_queryset_with_study_field_filter_with_float_double_slider
 
     filt = FilterFactory(study_field=field, domain=None, widget='double slider')
 
-    get_params = {'distance': ['2.1;4.0']}
+    get_params = {'DISTANCE': ['2.1;4.0']}
 
     request = rf.get(reverse('study-filter'), data=get_params)
 
@@ -830,13 +830,11 @@ def test_filter_filter_queryset_with_study_field_filter_with_float_double_slider
 
 @pytest.mark.django_db
 def test_filter_filter_queryset_with_study_field_filter_with_field_type_list(rf):
-    field = StudyFieldFactory(field_name='animal')
+    field = StudyFieldFactory(field_name='ANIMAL')
     studies = StudyFactory.create_batch(4)
 
     StudyVariableFactory(study_field=field, studies=studies[:1], value='cat, dog')
-    StudyVariableFactory(study_field=field, studies=studies[1:2], value='dog')
-    StudyVariableFactory(study_field=field, studies=studies[2:3], value='cat')
-    StudyVariableFactory(study_field=field, studies=studies[3:], value='penguin, goat')
+    StudyVariableFactory(study_field=field, studies=studies[2:], value='penguin, goat')
     field.field_type = "list"
     field.save()
 
@@ -845,7 +843,7 @@ def test_filter_filter_queryset_with_study_field_filter_with_field_type_list(rf)
     cat_var = StudyVariable.objects.get(study_field=field, value='cat')
     peng_var = StudyVariable.objects.get(study_field=field, value='penguin')
 
-    get_params = {'animal': [cat_var.id, peng_var.id]}
+    get_params = {'ANIMAL': [cat_var.id, peng_var.id]}
 
     request = rf.get(reverse('study-filter'), data=get_params)
 
@@ -857,7 +855,7 @@ def test_filter_filter_queryset_with_study_field_filter_with_field_type_list(rf)
 
 @pytest.mark.django_db
 def test_filter_filter_queryset_with_study_field_filter_with_field_type_list_contained_in_word(rf):
-    field = StudyFieldFactory(field_name='fruit')
+    field = StudyFieldFactory(field_name='FRUIT')
     studies = StudyFactory.create_batch(4)
 
     StudyVariableFactory(study_field=field, studies=studies[:1], value='pineapple, orange')
@@ -869,7 +867,7 @@ def test_filter_filter_queryset_with_study_field_filter_with_field_type_list_con
 
     filt = FilterFactory(study_field=field, domain=None, widget='checkbox')
 
-    get_params = {'fruit': [var_1.id]}
+    get_params = {'FRUIT': [var_1.id]}
 
     request = rf.get(reverse('study-filter'), data=get_params)
 
@@ -951,7 +949,7 @@ def test_filter_filter_queryset_with_qualifier_domain_filter_with_double_slider_
 
 @pytest.mark.django_db
 def test_filter_get_applied_filters_with_checkbox_widget(rf):
-    field = StudyFieldFactory(field_name='study_type')
+    field = StudyFieldFactory(field_name='STUDY_TYPE')
 
     var1 = StudyVariableFactory(study_field=field, value="D")
     var2 = StudyVariableFactory(study_field=field, value="A")
@@ -959,7 +957,7 @@ def test_filter_get_applied_filters_with_checkbox_widget(rf):
 
     filt = FilterFactory(study_field=field, domain=None, widget='checkbox')
 
-    get_params = {'study_type': [var2.id, var1.id]}
+    get_params = {'STUDY_TYPE': [var2.id, var1.id]}
     request = rf.get(reverse('study-filter'), data=get_params)
 
     assert filt.get_applied_filters(request.GET) == 'A | D'
@@ -983,7 +981,7 @@ def test_filter_get_applied_filters_with_discrete_slider_widget(rf):
 
 @pytest.mark.django_db
 def test_filter_get_applied_filters_with_double_slider_widget(rf):
-    field = StudyFieldFactory(field_name='start_year')
+    field = StudyFieldFactory(field_name='START_YEAR')
 
     StudyVariableFactory(study_field=field, value='1991.0')
     StudyVariableFactory(study_field=field, value='1992.0')
@@ -992,7 +990,7 @@ def test_filter_get_applied_filters_with_double_slider_widget(rf):
 
     filt = FilterFactory(study_field=field, domain=None, widget='double slider')
 
-    get_params = {'start_year': '1992.0;1993.0'}
+    get_params = {'START_YEAR': '1992.0;1993.0'}
     request = rf.get(reverse('study-filter'), data=get_params)
 
     assert filt.get_applied_filters(request.GET) == '1992.0 - 1993.0'
@@ -1030,7 +1028,7 @@ def test_filter_get_initial_slider_values_discrete_widget(rf, pass_values_kwarg)
 @pytest.mark.django_db
 @pytest.mark.parametrize("pass_values_kwarg", [(True), (False)])
 def test_filter_get_initial_slider_values_double_widget(rf, pass_values_kwarg):
-    field = StudyFieldFactory(field_name='start_year')
+    field = StudyFieldFactory(field_name='START_YEAR')
 
     StudyVariableFactory(study_field=field, value='1991.0')
     StudyVariableFactory(study_field=field, value='1992.0')
@@ -1039,7 +1037,7 @@ def test_filter_get_initial_slider_values_double_widget(rf, pass_values_kwarg):
 
     filt = FilterFactory(study_field=field, domain=None, widget='double slider')
 
-    get_params = {'start_year': '1992.0;1993.0'}
+    get_params = {'START_YEAR': '1992.0;1993.0'}
     request = rf.get(reverse('study-filter'), data=get_params)
 
     values = filt.get_values() if pass_values_kwarg else None
@@ -1068,7 +1066,7 @@ def test_filter_clash_with_both_domain_and_study_field_specified():
 @pytest.mark.django_db
 def test_filter_non_numeric_study_field_range_widget_exception():
     # Ensure non-numeric study field cannot be assigned to double slider
-    study_field = StudyFieldFactory(field_name='study_type')
+    study_field = StudyFieldFactory(field_name='STUDY_TYPE')
     StudyVariableFactory(study_field=study_field, value='A')
     filt = FilterFactory(study_field=study_field, label='Study Type',
                          domain=None, widget='double slider')
@@ -1090,7 +1088,7 @@ def test_study_filter_studies_joins_filters_with_logial_AND(rf):
 
     FilterFactory(domain=domain, study_field=None, widget='double slider')
 
-    field = StudyFieldFactory(field_name='study_type')
+    field = StudyFieldFactory(field_name='STUDY_TYPE')
     values = ["ala", "sbd", "zzz", "bet"]
 
     study_vars = []
@@ -1099,7 +1097,7 @@ def test_study_filter_studies_joins_filters_with_logial_AND(rf):
 
     FilterFactory(study_field=field, domain=None, widget='checkbox')
 
-    get_params = {'study_type': [study_vars[0].id, study_vars[1].id], 'DOMAIN': ['1;2']}
+    get_params = {'STUDY_TYPE': [study_vars[0].id, study_vars[1].id], 'DOMAIN': ['1;2']}
     request = rf.get(reverse('study-filter'), data=get_params)
 
     filtered_studies = Study.filter_studies(Filter.objects.all(), request.GET)

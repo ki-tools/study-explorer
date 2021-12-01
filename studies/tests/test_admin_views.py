@@ -133,9 +133,9 @@ def test_admin_upload_studies_clear_all(admin_client):
 
     assert len(Study.objects.all()) == 9
     assert StudyField.objects.count() == 47
-    assert StudyVariable.objects.count() == 114
+    assert StudyVariable.objects.count() == 115
     counts = (StudyVariable.objects
-                           .filter(study_field__field_name='Subject_Count')
+                           .filter(study_field__field_name='SUBJECT_COUNT')
                            .values_list('value', flat=True))
     assert sum([float(c) for c in counts if c is not None]) == 708147
 
@@ -166,7 +166,7 @@ def test_admin_upload_studies_keep_study_fields(admin_client):
 
     assert len(Study.objects.all()) == 9
     assert StudyField.objects.count() == 48
-    assert StudyVariable.objects.count() == 114
+    assert StudyVariable.objects.count() == 115
 
 
 @pytest.mark.django_db()

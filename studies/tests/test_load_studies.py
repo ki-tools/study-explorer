@@ -23,8 +23,8 @@ from django.db.models import Q
 from django.forms import ValidationError
 
 from ..management.commands import load_studies
-from ..models import StudyField, Study, StudyVariable
-from .factories import StudyFieldFactory
+from ..models import StudyField, Study, StudyVariable, Filter
+from .factories import StudyFieldFactory, FilterFactory, DomainFactory
 
 FILE_PATH = os.path.dirname(__file__)
 SAMPLE_FILE = os.path.join(FILE_PATH, 'studies_sample.csv')
@@ -44,10 +44,14 @@ def load_sample_studies(df_of_studies, transactional_db):
     load_studies.Command.process_studies(df_of_studies)
 
 
+def get_col_names(df):
+    return [c.split('::', maxsplit=1)[0].upper() for c in df.columns]
+
+
 def test_process_studies(load_sample_studies):
     assert Study.objects.count() == 9
     assert StudyField.objects.count() == 47
-    assert StudyVariable.objects.count() == 114
+    assert StudyVariable.objects.count() == 115
 
 
 def test_process_studies_utf(transactional_db):
@@ -77,14 +81,14 @@ def test_process_studies_alt(transactional_db):
 
 
 def test_process_studies_loads_all_columns(df_of_studies, load_sample_studies):
-    expected = list(df_of_studies.columns)
+    expected = get_col_names(df_of_studies)
     actual = list(StudyField.objects.values_list('field_name', flat=True))
     assert actual == expected
 
 
 def test_process_studies_subject_count(load_sample_studies):
     counts = StudyVariable.objects.\
-        filter(study_field__field_name='Subject_Count').\
+        filter(study_field__field_name='SUBJECT_COUNT').\
         values_list('value', flat=True)
     assert sum([float(c) for c in counts if c is not None]) == 708147
 
@@ -102,7 +106,7 @@ def test_load_studies_command(transactional_db):
     call_command('load_studies', SAMPLE_FILE)
     assert Study.objects.count() == 9
     assert StudyField.objects.count() == 47
-    assert StudyVariable.objects.count() == 114
+    assert StudyVariable.objects.count() == 115
 
 
 def test_load_studies_command_utf(transactional_db):
@@ -130,64 +134,79 @@ def test_load_studies_file_is_not_a_csv_raises_error(transactional_db):
 def test_load_studies_command_clear_all(transactional_db, df_of_studies):
     call_command('load_studies', ALT_FILE)
     additional_fields = list(StudyField.objects
-                                       .filter(~Q(field_name__in=df_of_studies.columns))
+                                       .filter(~Q(field_name__in=get_col_names(df_of_studies)))
                                        .values_list('studyvariable__value', flat=True))
     assert additional_fields == ['WHAT']
     assert Study.objects.all().count() == 1
     assert StudyVariable.objects.all().count() == 27
 
     call_command('load_studies', SAMPLE_FILE)
-    additional_fields = StudyField.objects.filter(~Q(field_name__in=df_of_studies.columns))
+    additional_fields = StudyField.objects.filter(~Q(field_name__in=get_col_names(df_of_studies)))
     assert additional_fields.count() == 0
     assert Study.objects.all().count() == 9
-    assert StudyVariable.objects.all().count() == 114
+    assert StudyVariable.objects.all().count() == 115
 
 
 def test_load_studies_command_clear_studies_and_variables_but_keep_fields(transactional_db, df_of_studies):
     call_command('load_studies', ALT_FILE)
     call_command('load_studies', SAMPLE_FILE, keep_fields=True)
-    additional_fields = StudyField.objects.filter(~Q(field_name__in=df_of_studies.columns))
+    additional_fields = StudyField.objects.filter(~Q(field_name__in=get_col_names(df_of_studies)))
     assert additional_fields.count() == 1
     assert Study.objects.all().count() == 9
-    assert StudyVariable.objects.all().count() == 114
+    assert StudyVariable.objects.all().count() == 115
 
 
 def test_load_studies_command_keep_studies_and_variables_and_fields(transactional_db, df_of_studies):
     call_command('load_studies', ALT_FILE)
     call_command('load_studies', SAMPLE_FILE, clear=False)
-    additional_fields = StudyField.objects.filter(~Q(field_name__in=df_of_studies.columns))
+    additional_fields = StudyField.objects.filter(~Q(field_name__in=get_col_names(df_of_studies)))
     assert additional_fields.count() == 1
     assert Study.objects.all().count() == 10
-    assert StudyVariable.objects.all().count() == 121
+    assert StudyVariable.objects.all().count() == 123
 
 
 def test_load_studies_command_clear_studies_and_variables_but_keep_int_field_types(transactional_db):
-    StudyFieldFactory(field_name='Start_Year', field_type='int')
+    StudyFieldFactory(field_name='START_YEAR', field_type='int')
     call_command('load_studies', ALT_FILE, keep_fields=True)
-    assert StudyField.objects.filter(field_name='Start_Year').first().field_type == 'int'
+    assert StudyField.objects.filter(field_name='START_YEAR').first().field_type == 'int'
 
 
 def test_load_studies_command_clear_studies_and_variables_but_keep_int_field_types_raises_error(transactional_db):
-    StudyFieldFactory(field_name='Country', field_type='int')
+    StudyFieldFactory(field_name='COUNTRY', field_type='int')
     with pytest.raises(ValidationError) as excinfo:
         call_command('load_studies', ALT_FILE, keep_fields=True)
-    msg = 'Country: USA cannot be cast to Integer type'
+    msg = 'COUNTRY: USA cannot be cast to Integer type'
     assert excinfo.value.message == msg
 
 
 def test_load_studies_command_clear_studies_and_variables_but_keep_list_field_types(transactional_db):
-    StudyFieldFactory(field_name='Country', field_type='list')
+    StudyFieldFactory(field_name='COUNTRY', field_type='list')
     call_command('load_studies', ALT_FILE, keep_fields=True)
-    assert StudyField.objects.filter(field_name='Country').first().field_type == 'list'
-    actual = list(StudyVariable.objects.filter(study_field__field_name='Country')
+    assert StudyField.objects.filter(field_name='COUNTRY').first().field_type == 'list'
+    actual = list(StudyVariable.objects.filter(study_field__field_name='COUNTRY')
                                        .values_list('value', flat=True))
     assert actual == ['USA']
 
 
 def test_load_studies_command_clear_all_overwrites_study_field_settings(transactional_db):
-    StudyFieldFactory(field_name='Country', field_type='int')
+    StudyFieldFactory(field_name='COUNTRY', field_type='int')
     call_command('load_studies', ALT_FILE)
-    assert StudyField.objects.filter(field_name='Country').first().field_type == 'str'
-    actual = list(StudyVariable.objects.filter(study_field__field_name='Country')
+    assert StudyField.objects.filter(field_name='COUNTRY').first().field_type == 'str'
+    actual = list(StudyVariable.objects.filter(study_field__field_name='COUNTRY')
                                        .values_list('value', flat=True))
     assert actual == ['USA']
+
+def test_load_studies_keep_filters(transactional_db):
+    call_command('load_studies', SAMPLE_FILE)
+    domain = DomainFactory()
+    study_fields = StudyField.objects.all()
+
+    filter_1 = FilterFactory(label='filter_1', domain=None, study_field=study_fields[0])
+    filter_2 = FilterFactory(label='filter_2', domain=domain, study_field=None)
+    filter_3 = FilterFactory(label='filter_3', study_field=study_fields[1], domain=domain)
+
+    before_filter_count = Filter.objects.all().count()
+    assert before_filter_count == 3
+    call_command('load_studies', SAMPLE_FILE)
+    after_filter_count = Filter.objects.all().count()
+    assert after_filter_count == before_filter_count
