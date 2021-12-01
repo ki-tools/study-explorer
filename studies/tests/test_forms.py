@@ -144,7 +144,7 @@ def test_study_filter_form_get_filter_layout_and_field_method_discrete_slider_wi
 
 @pytest.mark.django_db
 def test_study_filter_form_get_filter_layout_and_field_method_double_slider_widget(rf):
-    field = StudyFieldFactory(field_name='start_year')
+    field = StudyFieldFactory(field_name='START_YEAR')
 
     StudyVariableFactory(study_field=field, value=1998)
     StudyVariableFactory(study_field=field, value=2000)
@@ -158,7 +158,7 @@ def test_study_filter_form_get_filter_layout_and_field_method_double_slider_widg
 
     assert layout_item.active is False
     assert layout_item.fields[0].template == 'forms/range-widget.html'
-    assert layout_item.fields[0].fields == ['start_year']
+    assert layout_item.fields[0].fields == ['START_YEAR']
     assert isinstance(form_field, RangeField)
     assert not hasattr(form_field, 'pretty_initial')
 
@@ -182,13 +182,13 @@ def test_study_filter_form_get_filter_layout_and_field_method_checkbox_with_init
 
 @pytest.mark.django_db
 def test_study_filter_form_get_filter_layout_and_field_method_slider_with_initial_values(rf):
-    field = StudyFieldFactory(field_name='start_year')
+    field = StudyFieldFactory(field_name='START_YEAR')
 
     StudyVariableFactory(study_field=field, value=1998)
     StudyVariableFactory(study_field=field, value=2000)
     study_filter = FilterFactory(study_field=field, domain=None, widget='double slider')
 
-    get_params = {"start_year": "1998;2000"}
+    get_params = {"START_YEAR": "1998;2000"}
 
     request = rf.get(reverse('study-filter'), data=get_params)
     filter_form = StudyFilterForm(request=request)
