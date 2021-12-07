@@ -144,6 +144,10 @@ $ ./manage.py runserver
 ```sh
 $ ./manage.py test --driver Firefox -v
 ```
+or
+```shell
+make test
+```
 
 
 # Dokku Hosting
@@ -191,3 +195,10 @@ Or via Make:
 
 To deploy your currently checked out branch:
 - `make deploy_current_branch <name>` (e.g., `make deploy_current_branch staging`)
+
+
+## Migrations
+
+Locally: `make migrate`
+
+On Dokku Server: `dokku run se-<name> make migrate` (e.g., `dokku run se-staging make migrate`)
