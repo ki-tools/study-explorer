@@ -45,7 +45,9 @@ def get_study(row, study_cache=None, **kwargs):
         return None
     elif study_id in study_cache:
         return study_cache[study_id]
-    study, _ = Study.objects.get_or_create(study_id=study_id)
+    study, study_created = Study.objects.get_or_create(study_id=study_id)
+    if study_created:
+        print('Created Study: {0}'.format(study.study_id))
     study_cache[study_id] = study
     return study
 
@@ -69,7 +71,6 @@ def get_domain_variable(row, domain, variable_cache=None):
     cache_key = (domain.id, code)
     if cache_key in variable_cache:
         return variable_cache[cache_key]
-
     try:
         var = Variable.objects.get(**attrs)
     except Variable.DoesNotExist:
@@ -77,6 +78,7 @@ def get_domain_variable(row, domain, variable_cache=None):
         if category not in EMPTY_IDENTIFIERS:
             attrs['category'] = category
         var = Variable.objects.create(label=row[decode_idx], **attrs)
+        print('Created Variable: Domain: {0}, Label: {1}, Code: {2}'.format(domain.label, var.label, var.code))
     variable_cache[cache_key] = var
     return var
 
@@ -104,8 +106,8 @@ def get_qualifiers(row, valid_qualifiers, qualifier_cache=None):
         try:
             var = Variable.objects.get(**attrs)
         except Variable.DoesNotExist:
-            var = Variable.objects.create(label=row[qual_code],
-                                          **attrs)
+            var = Variable.objects.create(label=row[qual_code], **attrs)
+            print('Created Variable: Domain: {0}, Label: {1}, Code: {2}'.format(var.domain.label, var.label, var.code))
         qualifier_cache[cache_key] = var
         qualifiers.append(var)
     return qualifiers
@@ -201,10 +203,11 @@ class Command(BaseCommand):
             return False
 
         # Ensure that Domain exists
-        domain = match.group(1)
+        domain = match.group(1).upper()
         try:
             domain = Domain.objects.get(code=domain)
         except Domain.DoesNotExist:
+            self.stderr.write('Could not find domain: {0}'.format(domain))
             return False
 
         # Load file
@@ -242,22 +245,30 @@ class Command(BaseCommand):
         n_studies = Study.objects.count()
         n_codes = Variable.objects.count()
 
-        processed = False
-        for f in options['files']:
-            if f.endswith('.csv'):
-                if not re.search(FILE_PATTERN, os.path.basename(f)):
-                    self.stderr.write('Processing %s skipped, does '
-                                      'not match %s naming convention.'
-                                      % (f, FILE_PATTERN))
-                    continue
-                processed = self.process_file(f, **options)
-            elif f.endswith('.zip') or f.endswith('.upload'):
-                zip_file = zipfile.ZipFile(f)
-                for zf in zip_file.filelist:
-                    processed |= self.process_file(zf.filename, zip_file, **options)
-        if not processed:
-            raise CommandError('None of the supplied files could '
-                               'be processed.')
+        failed_to_process = []
+        try:
+            for f in options['files']:
+                if f.endswith('.csv'):
+                    if not re.search(FILE_PATTERN, os.path.basename(f)):
+                        self.stderr.write('Processing %s skipped, does '
+                                          'not match %s naming convention.'
+                                          % (f, FILE_PATTERN))
+                        failed_to_process.append(f)
+                        continue
+                    if not self.process_file(f, **options):
+                        failed_to_process.append(f)
+                elif f.endswith('.zip') or f.endswith('.upload'):
+                    zip_file = zipfile.ZipFile(f)
+                    for zf in zip_file.filelist:
+                        if not self.process_file(zf.filename, zip_file, **options):
+                            failed_to_process.append(zf.filename)
+                else:
+                    failed_to_process.append(f)
+        except Exception as ex:
+            raise CommandError(str(ex))
+
+        if failed_to_process:
+            raise CommandError('Files could not be processed: {0}'.format(', '.join(failed_to_process)))
 
         self.stdout.write('Wrote %s Study entries' %
                           (Study.objects.count() - n_studies))

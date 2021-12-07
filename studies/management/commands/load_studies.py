@@ -47,6 +47,15 @@ class Command(BaseCommand):
                 'widget_json': f.widget_json
             })
 
+        existing_fields = []
+        for f in StudyField.objects.all():
+            existing_fields.append({
+                'field_name': f.field_name,
+                'label': f.label,
+                'big_order': f.big_order,
+                'lil_order': f.lil_order
+            })
+
         if options['clear']:
 
             study_variables = StudyVariable.objects.all()
@@ -58,7 +67,6 @@ class Command(BaseCommand):
             studies.delete()
 
             if not options['keep_fields']:
-
                 study_fields = StudyField.objects.all()
                 self.stdout.write('Deleting %s study fields' % len(study_fields))
                 study_fields.delete()
@@ -112,8 +120,27 @@ class Command(BaseCommand):
                     for study_variable in StudyVariable.objects.filter(study_field=study_field):
                         study_variable.clean()
 
+        for field in existing_fields:
+            field_name = field['field_name']
+            label = field['label']
+            big_order = field['big_order']
+            lil_order = field['lil_order']
+            study_field = StudyField.objects.filter(field_name=field_name).first()
+            if study_field:
+                if study_field.label != label:
+                    self.stdout.write('Set StudyField label back to: "{0}" from: "{1}"'.format(label, study_field.label))
+                    study_field.label = label
+                if study_field.big_order != big_order:
+                    self.stdout.write('Set StudyField big_order back to: "{0}" from: "{1}"'.format(big_order, study_field.big_order))
+                    study_field.big_order = big_order
+                if study_field.lil_order != lil_order:
+                    self.stdout.write(
+                        'Set StudyField lil_order back to: "{0}" from: "{1}"'.format(lil_order, study_field.lil_order))
+                    study_field.lil_order = lil_order
+                study_field.save()
+
         for filter in existing_filters:
-            label = label = filter['label']
+            label = filter['label']
             domain_code = filter['domain_code']
             study_field_name = filter['study_field_name']
             domain = None
@@ -161,7 +188,24 @@ class Command(BaseCommand):
                           (StudyVariable.objects.count() - n_study_variables))
 
     @classmethod
-    def process_studies(self, df):
+    def process_studies(cls, df,
+                        print_study_field_details=True,
+                        print_study_details=False,
+                        print_study_var_details=False):
+        """Import the studies into the database.
+        NOTE: the print_* args are for ad-hoc debugging.
+
+        Parameters
+        ----------
+        df
+        print_study_field_details
+        print_study_details
+        print_study_var_details
+
+        Returns
+        -------
+
+        """
         df = df[notnull(df.index)]
         df = df.where((notnull(df)), None)
 
@@ -174,14 +218,41 @@ class Command(BaseCommand):
                 set_field_type = True
             study_field_name = study_field_name.upper()
             field_type = field_type.lower()
-            study_field, _ = StudyField.objects.get_or_create(field_name=study_field_name)
+            if print_study_field_details:
+                print('Processing Study Field: {0} ({1})'.format(study_field_name, field_type))
+            study_field, study_field_created = StudyField.objects.get_or_create(field_name=study_field_name)
             if set_field_type:
                 study_field.field_type = field_type
             study_field.save()
+            if print_study_field_details:
+                print('  Study Field {0}: {1} - {2} - {3}'.format(('Created' if study_field_created else ' Exists'),
+                                                                  study_field.field_name,
+                                                                  study_field.label,
+                                                                  study_field.field_type))
             for study_id, value in df[field_name].to_dict().items():
-                study, _ = Study.objects.get_or_create(study_id=study_id)
+                study, study_created = Study.objects.get_or_create(study_id=study_id)
+                if print_study_details:
+                    print('  Study {0}: {1}'.format(('Created' if study_created else ' Exists'), study.study_id))
                 if value is None:
                     continue
                 # NOTE: StudyVariable will take care of splitting lists types.
-                study_var, _ = StudyVariable.objects.get_or_create(study_field=study_field, value=str(value))
-                study_var.studies.add(study)
+                study_var_created = False
+                study_var = StudyVariable.objects.filter(study_field=study_field, value=str(value)).first()
+                if study_var:
+                    study_var.studies.add(study)
+                else:
+                    study_var = StudyVariable(study_field=study_field, value=str(value), with_studies=[study])
+                    study_var.save()
+                    study_var_created = True
+
+                if print_study_var_details:
+                    if study_var.split_variables:
+                        print('  Study Variable {0} - {1} split into multiple StudyVariables:'.format(
+                            study_var.study_field.field_name,
+                            study_var.value))
+                        for split_var in study_var.split_variables:
+                            print('    Study Variable {0}'.format(split_var.value))
+                    else:
+                        print('  Study Variable {0}: {1} - {2}'.format(('Created' if study_var_created else ' Exists'),
+                                                                 study_var.study_field.field_name,
+                                                                 study_var.value))

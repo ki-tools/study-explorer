@@ -22,7 +22,9 @@ def fix_study_variable_list(apps, schema_editor):
             print('-' * 80)
             print('Splitting StudyVariable: {0}'.format(obj.value))
             obj.split_list()
-            print('After Splitting StudyVariable: {0}'.format(obj.value))
+            print('After Splitting StudyVariable:')
+            for split_var in obj.split_variables:
+                print('  {0}'.format(split_var.value))
 
 
 class Migration(migrations.Migration):

@@ -84,9 +84,9 @@ class StudyField(models.Model):
         verbose_name_plural = "Study Fields"
 
     def save(self, **kwargs):
+        self.field_name = self.field_name.upper().strip()
         if not self.label:
-            self.label = self.field_name.replace('_', ' ')
-        self.field_name = self.field_name.upper()
+            self.label = self.field_name.replace('_', ' ').title().strip()
         super(StudyField, self).save()
         if self.field_type == 'list':
             for obj in StudyVariable.objects.filter(study_field=self):
@@ -166,6 +166,13 @@ class Study(models.Model):
 
 class StudyVariable(models.Model):
 
+    def __init__(self, *args, **kwargs):
+        # Temporarily holds studies to associate with self when saved.
+        self._with_studies = kwargs.pop('with_studies', [])
+        # Temporarily holds variables that were created for "list" types.
+        self.split_variables = []
+        super(StudyVariable, self).__init__(*args, **kwargs)
+
     studies = models.ManyToManyField(
         Study, blank=True,
         help_text='The studies that this variable applies to.',
@@ -203,9 +210,17 @@ class StudyVariable(models.Model):
                 raise ValidationError(error)
 
     def save(self, *args, **kwargs):
-        super(StudyVariable, self).save(*args, **kwargs)
+        self.split_variables = []
         if self.study_field.field_type == 'list':
-            self.split_list()
+            if self.split_list():
+                # Return that the object was not saved since it was split into other variables.
+                return False
+
+        super(StudyVariable, self).save(*args, **kwargs)
+        if self._with_studies:
+            for study in self._with_studies:
+                self.studies.add(study)
+            self._with_studies = []
 
     def split_list(self, sep=','):
         """
@@ -214,26 +229,30 @@ class StudyVariable(models.Model):
 
         Parameters:
             sep (list separator - default: ',')
+        Returns:
+            True if self was spit and should not be saved.
         """
+        self.split_variables = []
+
         if sep not in self.value:
-            return
+            return False
 
-        studies = [s for s in self.studies.all()]
+        self_is_persisted = self.pk is not None
+        studies = self._with_studies
+        if self_is_persisted:
+            studies += [s for s in self.studies.all() if s not in studies]
         study_field = self.study_field
-
-        values = [v.replace(' ', '') for v in self.value.split(sep)]
-        first_val = values.pop(0)
-        existing_study_var = StudyVariable.objects.filter(study_field=self.study_field, value=first_val).first()
-        if existing_study_var and existing_study_var.id != self.id:
-            studies += [s for s in existing_study_var.studies.all()]
-            existing_study_var.delete()
-
-        self.value = first_val
-        self.save()
+        values = [v.strip() for v in self.value.split(sep) if v.strip()]
 
         for val in values:
             study_var, _ = StudyVariable.objects.get_or_create(study_field=study_field, value=val)
             study_var.studies.add(*studies)
+            self.split_variables.append(study_var)
+
+        if self_is_persisted:
+            self.delete()
+
+        return len(self.split_variables) > 0
 
     @classmethod
     def get_dataframe(self, **kwargs):

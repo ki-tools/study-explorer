@@ -57,17 +57,6 @@ class StudyVariableFactory(factory.django.DjangoModelFactory):
     study_field = factory.SubFactory(StudyFieldGOCFactory)
     value = '1993'
 
-    @factory.post_generation
-    def studies(self, create, extracted, **kwargs):
-        if not create:
-            # Simple build, do nothing.
-            return
-
-        if extracted:
-            # A list of codes were passed in, use them
-            for study in extracted:
-                self.studies.add(study)
-
 
 class DomainFactory(factory.django.DjangoModelFactory):
     class Meta:

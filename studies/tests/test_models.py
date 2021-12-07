@@ -44,7 +44,13 @@ def test_study_field_str_repr_returns_label():
 @pytest.mark.django_db
 def test_study_field_str_repr_returns_field_name_with_underscore_replaced_by_spaces():
     study_field = StudyFieldFactory(field_name='PI_in_charge')
-    assert str(study_field) == 'PI in charge'
+    assert str(study_field) == 'Pi In Charge'
+
+
+@pytest.mark.django_db
+def test_study_field_str_repr_returns_field_name_with_titleized():
+    study_field = StudyFieldFactory(field_name='PI in charge')
+    assert str(study_field) == 'Pi In Charge'
 
 
 @pytest.mark.django_db
@@ -192,6 +198,7 @@ def test_study_variable_clean_field_type_int_raises_error_if_value_not_castable_
 
 
 @pytest.mark.parametrize("sep, list_value", [
+    (',', "MEX,CAN,USA"),
     (',', "MEX, CAN, USA"),
     (' ', "MEX CAN USA"),
 ])
@@ -199,9 +206,9 @@ def test_study_variable_clean_field_type_int_raises_error_if_value_not_castable_
 def test_study_variable_split_list(sep, list_value):
     field = StudyFieldFactory(field_name='country')
     studies = StudyFactory.create_batch(4)
-    StudyVariableFactory(studies=studies[3:4], study_field=field, value="BLG")
-    StudyVariableFactory(studies=studies[2:3], study_field=field, value="USA")
-    var = StudyVariableFactory(studies=studies[:2], study_field=field, value=list_value)
+    StudyVariableFactory(with_studies=studies[3:4], study_field=field, value="BLG")
+    StudyVariableFactory(with_studies=studies[2:3], study_field=field, value="USA")
+    var = StudyVariableFactory(with_studies=studies[:2], study_field=field, value=list_value)
     assert StudyVariable.objects.all().count() == 3
     field.field_type = 'list'
     var.split_list(sep=sep)
@@ -210,6 +217,54 @@ def test_study_variable_split_list(sep, list_value):
                                .order_by('value')
                                .values_list('value', flat=True))
     assert values == ['BLG', 'CAN', 'MEX', 'USA']
+
+@pytest.mark.django_db
+def test_study_variable_split_list_does_not_persist_self():
+    field = StudyFieldFactory(field_name='country', field_type='list')
+    study = StudyFactory.create()
+    var = StudyVariableFactory(with_studies=[study], study_field=field, value="USA,, ,  ")
+    assert var.pk is None
+    assert StudyVariable.objects.all().count() == 1
+    var = StudyVariableFactory(with_studies=[study], study_field=field, value="USA,CAN")
+    assert var.pk is None
+    assert StudyVariable.objects.all().count() == 2
+
+
+@pytest.mark.django_db
+def test_study_variable_split_list_does_not_split_when_missing_delimiter():
+    field = StudyFieldFactory(field_name='country', field_type='list')
+    study = StudyFactory.create()
+    var = StudyVariableFactory(with_studies=[study], study_field=field, value="USA")
+    assert var.pk is not None
+    assert StudyVariable.objects.all().count() == 1
+
+
+@pytest.mark.django_db
+def test_study_variable_split_list_sets_all_studies():
+    field = StudyFieldFactory(field_name='country', field_type='list')
+
+    usa_study = StudyFactory.create()
+    usa_var = StudyVariableFactory(with_studies=[usa_study], study_field=field, value="USA")
+    assert usa_study in usa_var.studies.all()
+
+    split_study = StudyFactory.create()
+    split_var = StudyVariableFactory(with_studies=[split_study], study_field=field, value="USA,CAN")
+    assert split_var.pk is None
+    assert len(split_var.split_variables) == 2
+    assert StudyVariable.objects.all().count() == 2
+
+    split_usa_var = split_var.split_variables[0]
+    split_can_var = split_var.split_variables[1]
+
+    assert split_usa_var == usa_var
+    assert split_usa_var.value == 'USA'
+    assert split_usa_var.studies.all().count() == 2
+    assert usa_study in usa_var.studies.all()
+    assert split_study in usa_var.studies.all()
+
+    assert split_can_var.value == 'CAN'
+    assert split_can_var.studies.all().count() == 1
+    assert split_study in split_can_var.studies.all()
 
 
 @pytest.mark.django_db
@@ -223,15 +278,15 @@ def __setup_study_variable_data():
     study_1 = StudyFactory(study_id='ki-103')
     study_2 = StudyFactory(study_id='ki-114')
     study_3 = StudyFactory(study_id='CPT')
-    StudyVariableFactory(studies=[study_1],
+    StudyVariableFactory(with_studies=[study_1],
                          study_field__field_name='START_YEAR',
                          study_field__label='Start Year',
                          value='1956.0')
-    StudyVariableFactory(studies=[study_2, study_3],
+    StudyVariableFactory(with_studies=[study_2, study_3],
                          study_field__field_name='START_YEAR',
                          study_field__label='Start Year',
                          value='1913.0')
-    StudyVariableFactory(studies=[study_1, study_3],
+    StudyVariableFactory(with_studies=[study_1, study_3],
                          study_field__field_name='STOP_YEAR',
                          study_field__label='Stop Year',
                          value='2016.0')
@@ -336,14 +391,34 @@ def test_study_variable_get_dataframe_field_type_list_uses_longest_value():
     field = StudyFieldFactory(field_name='COUNTRY', field_type="list")
     studies = StudyFactory.create_batch(4)
 
-    StudyVariableFactory(studies=studies[2:], study_field=field, value="USA")
-    StudyVariableFactory(studies=studies[:1], study_field=field, value="MEX, CAN, USA")
+    StudyVariableFactory(with_studies=studies[2:], study_field=field, value="USA")
+    StudyVariableFactory(with_studies=studies[:1], study_field=field, value="MEX, CAN, USA")
 
     assert StudyVariable.objects.all().count() == 3
-    df = StudyVariable.get_dataframe(
-        study_field__in=StudyField.objects.filter(field_name='COUNTRY'))
-    assert list(df.columns) == ['COUNTRY']
-    assert list(df.values) == ['MEX', 'USA', 'USA']
+    df = StudyVariable.get_dataframe(study_field__in=StudyField.objects.filter(field_name='COUNTRY'))
+    assert list(df.columns) == ['Country']
+    assert list(df.values) == ['USA', 'USA', 'USA']
+
+
+@pytest.mark.django_db
+def test_study_variable_is_created_with_studies():
+    studies = StudyFactory.create_batch(4)
+
+    # Via factory
+    study_var = StudyVariableFactory(with_studies=studies)
+    study_var_studies = study_var.studies.all()
+    for study in studies:
+        assert study in study_var_studies
+    assert study_var._with_studies == []
+
+    # Via class
+    field = StudyFieldFactory(field_name='test')
+    study_var = StudyVariable(with_studies=studies, study_field=field, value='test')
+    study_var.save()
+    study_var_studies = study_var.studies.all()
+    for study in studies:
+        assert study in study_var_studies
+    assert study_var._with_studies == []
 
 
 @pytest.mark.django_db
@@ -518,8 +593,8 @@ def test_filter_get_counts_study_no_active_filters(rf, pass_values_kwarg):
     field = StudyFieldFactory(field_name='STUDY_TYPE')
     studies = StudyFactory.create_batch(4)
 
-    StudyVariableFactory(studies=studies[:2], study_field=field, value="A")
-    StudyVariableFactory(studies=studies[2:], study_field=field, value="B")
+    StudyVariableFactory(with_studies=studies[:2], study_field=field, value="A")
+    StudyVariableFactory(with_studies=studies[2:], study_field=field, value="B")
 
     filt = FilterFactory(study_field=field, domain=None)
 
@@ -534,8 +609,8 @@ def test_filter_get_counts_study_no_active_filters(rf, pass_values_kwarg):
 def test_filter_get_counts_study_no_active_filters_with_field_type_list(rf):
     field = StudyFieldFactory(field_name='COUNTRY')
     studies = StudyFactory.create_batch(4)
-    StudyVariableFactory(studies=studies[2:], study_field=field, value="USA")
-    StudyVariableFactory(studies=studies[:2], study_field=field, value="CAN, MEX, USA")
+    StudyVariableFactory(with_studies=studies[2:], study_field=field, value="USA")
+    StudyVariableFactory(with_studies=studies[:2], study_field=field, value="CAN, MEX, USA")
     field.field_type = "list"
     field.save()
     assert StudyVariable.objects.all().count() == 3
@@ -552,8 +627,8 @@ def test_filter_get_counts_study_with_active_filter_same_as_field_filter(rf):
     field = StudyFieldFactory(field_name='study_type')
     studies = StudyFactory.create_batch(5)
 
-    var1 = StudyVariableFactory(studies=studies[:3], study_field=field, value="A")
-    StudyVariableFactory(studies=studies[3:], study_field=field, value="B")
+    var1 = StudyVariableFactory(with_studies=studies[:3], study_field=field, value="A")
+    StudyVariableFactory(with_studies=studies[3:], study_field=field, value="B")
 
     filt = FilterFactory(study_field=field, domain=None)
 
@@ -572,10 +647,10 @@ def test_filter_get_counts_study_with_active_filter_different_from_field_filter(
     study = StudyFactory()
     study2 = StudyFactory()
 
-    StudyVariableFactory(study_field=field, value="A", studies=[study])
-    StudyVariableFactory(study_field=field, value="B", studies=[study2])
-    var1 = StudyVariableFactory(study_field=field2, value="FOO", studies=[study])
-    StudyVariableFactory(study_field=field2, value="BAR", studies=[study2])
+    StudyVariableFactory(study_field=field, value="A", with_studies=[study])
+    StudyVariableFactory(study_field=field, value="B", with_studies=[study2])
+    var1 = StudyVariableFactory(study_field=field2, value="FOO", with_studies=[study])
+    StudyVariableFactory(study_field=field2, value="BAR", with_studies=[study2])
 
     filt = FilterFactory(study_field=field, domain=None)
     FilterFactory(study_field=field2, domain=None)
@@ -734,8 +809,8 @@ def test_filter_get_selections_with_double_slider_widget(rf):
 def test_filter_filter_queryset_with_study_field_filter_with_checkbox_widget(rf):
     field = StudyFieldFactory(field_name='STUDY_TYPE')
 
-    variable = StudyVariableFactory(study_field=field, value="A", studies=[StudyFactory()])
-    StudyVariableFactory(study_field=field, value="B", studies=[StudyFactory()])
+    variable = StudyVariableFactory(study_field=field, value="A", with_studies=[StudyFactory()])
+    StudyVariableFactory(study_field=field, value="B", with_studies=[StudyFactory()])
 
     filt = FilterFactory(study_field=field, domain=None, widget='checkbox')
 
@@ -789,10 +864,10 @@ def test_filter_filter_queryset_with_study_field_filter_with_int_double_slider_w
     field = StudyFieldFactory(field_name='START_YEAR')
     studies = StudyFactory.create_batch(4)
 
-    StudyVariableFactory(study_field=field, value='1991.0', studies=studies[:1])
-    StudyVariableFactory(study_field=field, value='1992.0', studies=studies[1:2])
-    StudyVariableFactory(study_field=field, value='1993.0', studies=studies[2:3])
-    StudyVariableFactory(study_field=field, value='1994.0', studies=studies[3:])
+    StudyVariableFactory(study_field=field, value='1991.0', with_studies=studies[:1])
+    StudyVariableFactory(study_field=field, value='1992.0', with_studies=studies[1:2])
+    StudyVariableFactory(study_field=field, value='1993.0', with_studies=studies[2:3])
+    StudyVariableFactory(study_field=field, value='1994.0', with_studies=studies[3:])
 
     filt = FilterFactory(study_field=field, domain=None, widget='double slider')
 
@@ -811,10 +886,10 @@ def test_filter_filter_queryset_with_study_field_filter_with_float_double_slider
     field = StudyFieldFactory(field_name='DISTANCE')
     studies = StudyFactory.create_batch(4)
 
-    StudyVariableFactory(study_field=field, value='3.5', studies=studies[:1])
-    StudyVariableFactory(study_field=field, value='2.1', studies=studies[1:2])
-    StudyVariableFactory(study_field=field, value='7.9', studies=studies[2:3])
-    StudyVariableFactory(study_field=field, value='4.1', studies=studies[3:])
+    StudyVariableFactory(study_field=field, value='3.5', with_studies=studies[:1])
+    StudyVariableFactory(study_field=field, value='2.1', with_studies=studies[1:2])
+    StudyVariableFactory(study_field=field, value='7.9', with_studies=studies[2:3])
+    StudyVariableFactory(study_field=field, value='4.1', with_studies=studies[3:])
 
     filt = FilterFactory(study_field=field, domain=None, widget='double slider')
 
@@ -833,8 +908,8 @@ def test_filter_filter_queryset_with_study_field_filter_with_field_type_list(rf)
     field = StudyFieldFactory(field_name='ANIMAL')
     studies = StudyFactory.create_batch(4)
 
-    StudyVariableFactory(study_field=field, studies=studies[:1], value='cat, dog')
-    StudyVariableFactory(study_field=field, studies=studies[2:], value='penguin, goat')
+    StudyVariableFactory(study_field=field, with_studies=studies[:1], value='cat, dog')
+    StudyVariableFactory(study_field=field, with_studies=studies[2:], value='penguin, goat')
     field.field_type = "list"
     field.save()
 
@@ -858,10 +933,10 @@ def test_filter_filter_queryset_with_study_field_filter_with_field_type_list_con
     field = StudyFieldFactory(field_name='FRUIT')
     studies = StudyFactory.create_batch(4)
 
-    StudyVariableFactory(study_field=field, studies=studies[:1], value='pineapple, orange')
-    var_1 = StudyVariableFactory(study_field=field, studies=studies[1:2], value='apple')
-    StudyVariableFactory(study_field=field, studies=studies[2:3], value='pear')
-    StudyVariableFactory(study_field=field, studies=studies[3:], value='grape, kiwi')
+    StudyVariableFactory(study_field=field, with_studies=studies[:1], value='pineapple, orange')
+    var_1 = StudyVariableFactory(study_field=field, with_studies=studies[1:2], value='apple')
+    StudyVariableFactory(study_field=field, with_studies=studies[2:3], value='pear')
+    StudyVariableFactory(study_field=field, with_studies=studies[3:], value='grape, kiwi')
     field.field_type = "list"
     field.save()
 
@@ -1093,7 +1168,7 @@ def test_study_filter_studies_joins_filters_with_logial_AND(rf):
 
     study_vars = []
     for value, study in zip(values, studies):
-        study_vars.append(StudyVariableFactory(study_field=field, value=value, studies=[study]))
+        study_vars.append(StudyVariableFactory(study_field=field, value=value, with_studies=[study]))
 
     FilterFactory(study_field=field, domain=None, widget='checkbox')
 

@@ -162,7 +162,7 @@ def test_load_studies_command_keep_studies_and_variables_and_fields(transactiona
     additional_fields = StudyField.objects.filter(~Q(field_name__in=get_col_names(df_of_studies)))
     assert additional_fields.count() == 1
     assert Study.objects.all().count() == 10
-    assert StudyVariable.objects.all().count() == 123
+    assert StudyVariable.objects.all().count() == 122
 
 
 def test_load_studies_command_clear_studies_and_variables_but_keep_int_field_types(transactional_db):
@@ -175,7 +175,7 @@ def test_load_studies_command_clear_studies_and_variables_but_keep_int_field_typ
     StudyFieldFactory(field_name='COUNTRY', field_type='int')
     with pytest.raises(ValidationError) as excinfo:
         call_command('load_studies', ALT_FILE, keep_fields=True)
-    msg = 'COUNTRY: USA cannot be cast to Integer type'
+    msg = 'Country: USA cannot be cast to Integer type'
     assert excinfo.value.message == msg
 
 

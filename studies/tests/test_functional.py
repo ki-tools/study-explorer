@@ -95,7 +95,7 @@ def test_admin_panel_redirect_if_no_studies(page):
 
 
 def test_study_panels_on_home_even_if_no_domains(live_server, selenium, transactional_db, hide_cookie_banner):
-    StudyVariableFactory(studies=StudyFactory.create_batch(3))
+    StudyVariableFactory(with_studies=StudyFactory.create_batch(3))
     selenium.get(live_server.url)
     hide_cookie_banner()
 

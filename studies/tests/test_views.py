@@ -78,9 +78,9 @@ def test_study_list_view_get_study_dict_big_order_field_type_returns(rf, big_ord
     StudyFieldFactory(field_name='STOP_YEAR', label='stop year')
     study = StudyFactory(study_id='HIG7')
     StudyVariableFactory(study_field__field_name='START_YEAR',
-                         studies=[study], value='1997.0')
+                         with_studies=[study], value='1997.0')
     StudyVariableFactory(study_field__field_name='STOP_YEAR',
-                         studies=[study], value='1999.0')
+                         with_studies=[study], value='1999.0')
 
     request = rf.get(reverse('study-list'))
     study_list_view = _get_instance(StudyListView, request=request)
@@ -451,9 +451,9 @@ def test_study_filter_view_get_context_GET_params_for_multiple_values_set_on_stu
     field = StudyFieldFactory(field_name='study_type')
     FilterFactory(study_field=field, domain=None)
     studies1 = StudyFactory.create_batch(3)
-    var1 = StudyVariableFactory(studies=studies1, study_field=field, value="B")
+    var1 = StudyVariableFactory(with_studies=studies1, study_field=field, value="B")
     studies2 = StudyFactory.create_batch(3)
-    var2 = StudyVariableFactory(studies=studies2, study_field=field, value="A")
+    var2 = StudyVariableFactory(with_studies=studies2, study_field=field, value="A")
     study_ids = [study.study_id for study in studies1 + studies2]
     study_filter_view = _set_up_study_filter_view(rf, data={'study_type': [var1.id, var2.id]})
     context = study_filter_view.get_context_data()
@@ -466,9 +466,9 @@ def test_study_filter_view_get_context_data_sets_study_dict_and_field_names_to_N
     field = StudyFieldFactory(field_name='STUDY_TYPE')
     FilterFactory(study_field=field, domain=None)
     studies1 = StudyFactory.create_batch(3)
-    var1 = StudyVariableFactory(studies=studies1, study_field=field, value="B")
+    var1 = StudyVariableFactory(with_studies=studies1, study_field=field, value="B")
     studies2 = StudyFactory.create_batch(3)
-    StudyVariableFactory(studies=studies2, study_field=field, value="A")
+    StudyVariableFactory(with_studies=studies2, study_field=field, value="A")
     study_ids = [study.study_id for study in studies1]
     study_filter_view = _set_up_study_filter_view(rf, data={'STUDY_TYPE': var1.id})
     context = study_filter_view.get_context_data()
@@ -483,9 +483,9 @@ def test_study_filter_view_get_context_data_sets_study_dict_and_field_names(rf):
     FilterFactory(study_field=field, domain=None)
 
     studies1 = StudyFactory.create_batch(3)
-    var1 = StudyVariableFactory(studies=studies1, study_field=field, value="B")
+    var1 = StudyVariableFactory(with_studies=studies1, study_field=field, value="B")
     studies2 = StudyFactory.create_batch(3)
-    StudyVariableFactory(studies=studies2, study_field=field, value="A")
+    StudyVariableFactory(with_studies=studies2, study_field=field, value="A")
 
     study_ids = sorted([study.study_id for study in studies1])
     study_filter_view = _set_up_study_filter_view(rf, data={'STUDY_TYPE': var1.id})
@@ -500,7 +500,7 @@ def test_study_filter_view_get_context_data_when_no_objects_in_object_list(rf):
     StudyFieldFactory(field_name='FOO', lil_order=0, label='FOO')
     FilterFactory(study_field__field_name='FOO', domain=None)
 
-    StudyVariableFactory(studies=StudyFactory.create_batch(3),
+    StudyVariableFactory(with_studies=StudyFactory.create_batch(3),
                          study_field=field, value="B")
 
     study_filter_view = _set_up_study_filter_view(rf, data={'FOO': '7'})
@@ -515,9 +515,9 @@ def test_study_filter_view_get_context_data_with_none_of_display_field_in_study_
     StudyFieldFactory(field_name='FOO', lil_order=0, label='FOO')
     FilterFactory(study_field=field, domain=None)
 
-    var1 = StudyVariableFactory(studies=StudyFactory.create_batch(3),
+    var1 = StudyVariableFactory(with_studies=StudyFactory.create_batch(3),
                                 study_field=field, value="B")
-    StudyVariableFactory(studies=StudyFactory.create_batch(3),
+    StudyVariableFactory(with_studies=StudyFactory.create_batch(3),
                          study_field__field_name='FOO', value="B")
 
     study_filter_view = _set_up_study_filter_view(rf, data={'STUDY_TYPE': var1.id})
@@ -569,13 +569,13 @@ def test_explorer_view_returns_no_domains_if_no_counts(rf):
 @pytest.mark.django_db
 def test_study_explorer_view_resolves_studies(rf):
     studies = StudyFactory.create_batch(7)
-    StudyVariableFactory(studies=studies[:5],
+    StudyVariableFactory(with_studies=studies[:5],
                          study_field__field_name='STUDY_TYPE',
                          value='strawberry')
-    StudyVariableFactory(studies=[studies[5]],
+    StudyVariableFactory(with_studies=[studies[5]],
                          study_field__field_name='STUDY_TYPE',
                          value='vanilla')
-    var1 = StudyVariableFactory(studies=[studies[6]],
+    var1 = StudyVariableFactory(with_studies=[studies[6]],
                                 study_field__field_name='STUDY_TYPE',
                                 value='chocolate')
     FilterFactory(study_field__field_name='STUDY_TYPE', domain=None, label='HAHA')
@@ -590,13 +590,13 @@ def test_study_explorer_view_resolves_studies(rf):
 @pytest.mark.django_db
 def test_study_explorer_view_sets_applied_filters(rf):
     studies = StudyFactory.create_batch(7)
-    StudyVariableFactory(studies=studies[:5],
+    StudyVariableFactory(with_studies=studies[:5],
                          study_field__field_name='STUDY_TYPE',
                          value='strawberry')
-    var1 = StudyVariableFactory(studies=[studies[5]],
+    var1 = StudyVariableFactory(with_studies=[studies[5]],
                                 study_field__field_name='STUDY_TYPE',
                                 value='vanilla')
-    var2 = StudyVariableFactory(studies=[studies[6]],
+    var2 = StudyVariableFactory(with_studies=[studies[6]],
                                 study_field__field_name='STUDY_TYPE',
                                 value='chocolate')
     FilterFactory(study_field__field_name='STUDY_TYPE', domain=None, label='HAHA')
