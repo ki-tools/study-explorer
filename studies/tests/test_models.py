@@ -387,17 +387,37 @@ def test_study_variable_get_dataframe_two_rows_by_study_id():
 
 
 @pytest.mark.django_db
-def test_study_variable_get_dataframe_field_type_list_uses_longest_value():
-    field = StudyFieldFactory(field_name='COUNTRY', field_type="list")
+def test_study_variable_get_dataframe_uses_max_value():
+    str_field = StudyFieldFactory(field_name='STR_FIELD', field_type="str", label='Str Field')
+    list_field = StudyFieldFactory(field_name='LIST_FIELD', field_type="list", label='List Field')
+    int_field = StudyFieldFactory(field_name='INT_FIELD', field_type="int", label='Int Field')
+    float_field = StudyFieldFactory(field_name='FLOAT_FIELD', field_type="float", label='Float Field')
     studies = StudyFactory.create_batch(4)
 
-    StudyVariableFactory(with_studies=studies[2:], study_field=field, value="USA")
-    StudyVariableFactory(with_studies=studies[:1], study_field=field, value="MEX, CAN, USA")
+    StudyVariableFactory(with_studies=studies[2:], study_field=str_field, value='abc')
+    StudyVariableFactory(with_studies=studies[2:], study_field=list_field, value="AAA")
+    StudyVariableFactory(with_studies=studies[2:], study_field=int_field, value=1)
+    StudyVariableFactory(with_studies=studies[2:], study_field=int_field, value=3)
+    StudyVariableFactory(with_studies=studies[2:], study_field=float_field, value=100.1)
+    StudyVariableFactory(with_studies=studies[2:], study_field=float_field, value=300.3)
 
-    assert StudyVariable.objects.all().count() == 3
-    df = StudyVariable.get_dataframe(study_field__in=StudyField.objects.filter(field_name='COUNTRY'))
-    assert list(df.columns) == ['Country']
-    assert list(df.values) == ['USA', 'USA', 'USA']
+    StudyVariableFactory(with_studies=studies[:1], study_field=str_field, value='xyz')
+    StudyVariableFactory(with_studies=studies[:1], study_field=list_field, value="DDD, CCC, AAA")
+    StudyVariableFactory(with_studies=studies[:1], study_field=int_field, value=5)
+    StudyVariableFactory(with_studies=studies[:1], study_field=int_field, value=7)
+    StudyVariableFactory(with_studies=studies[:1], study_field=float_field, value=500.5)
+    StudyVariableFactory(with_studies=studies[:1], study_field=float_field, value=700.7)
+
+    df = StudyVariable.get_dataframe(study_field__in=StudyField.objects.filter(field_name__in=['STR_FIELD',
+                                                                                               'LIST_FIELD',
+                                                                                               'INT_FIELD',
+                                                                                               'FLOAT_FIELD']))
+    assert list(df.columns) == ['Float Field', 'Int Field', 'List Field', 'Str Field']
+    assert df.values.tolist() == [
+        [700.7, '7', 'AAA, DDD, CCC', 'xyz'],
+        [300.3, '3', 'AAA', 'abc'],
+        [300.3, '3', 'AAA', 'abc']
+    ]
 
 
 @pytest.mark.django_db

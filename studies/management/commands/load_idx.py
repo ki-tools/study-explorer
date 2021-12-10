@@ -214,11 +214,12 @@ class Command(BaseCommand):
         try:
             if zip_file:
                 with zip_file.open(filepath) as f:
-                    df = read_csv(f)
+                    df = read_csv(f, encoding='windows-1254')
             else:
                 with open(filepath) as f:
-                    df = read_csv(f)
-        except:
+                    df = read_csv(f, encoding='windows-1254')
+        except Exception as ex:
+            self.stderr.write(str(ex))
             self.stderr.write('%s could not be read ensure '
                               'it is a valid csv file.' % basename)
             return False

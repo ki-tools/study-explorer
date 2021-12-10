@@ -210,6 +210,7 @@ class StudyVariable(models.Model):
                 raise ValidationError(error)
 
     def save(self, *args, **kwargs):
+        self.clean()
         self.split_variables = []
         if self.study_field.field_type == 'list':
             if self.split_list():
@@ -273,9 +274,24 @@ class StudyVariable(models.Model):
 
         study_var_dict = study_variables.values('studies__study_id', 'study_field', 'value')
         df = pd.DataFrame.from_records(study_var_dict)
+
+        study_field_types = {}
+        for sf in study_fields:
+            study_field_types[sf.field_name] = sf.field_type
+
+        def aggfunc(x):
+            study_field_name = df.iloc[x.index]['study_field'].values[0]
+            study_field_type = study_field_types[study_field_name]
+            if study_field_type == 'list':
+                return ', '.join(x.astype(str))
+            elif study_field_type == 'str':
+                return max(x, key=len)
+            else:
+                return max(x)
+
         pivot = pd.pivot_table(df, index='studies__study_id',
                                columns='study_field', values='value',
-                               aggfunc=(lambda x: max(x, key=len)))
+                               aggfunc=aggfunc)
 
         pivot = pivot.rename(columns=dict(study_fields.values_list('field_name', 'label')))
 

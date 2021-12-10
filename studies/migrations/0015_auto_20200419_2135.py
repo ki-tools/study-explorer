@@ -25,6 +25,8 @@ def fix_study_variable_list(apps, schema_editor):
             print('After Splitting StudyVariable:')
             for split_var in obj.split_variables:
                 print('  {0}'.format(split_var.value))
+                for study in split_var.studies.all():
+                    print('    Study: {0}'.format(study.study_id))
 
 
 class Migration(migrations.Migration):

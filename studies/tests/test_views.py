@@ -88,6 +88,17 @@ def test_study_list_view_get_study_dict_big_order_field_type_returns(rf, big_ord
 
 
 @pytest.mark.django_db
+def test_study_list_view_get_study_dict_list_field_types(rf):
+    country_study_field = StudyFieldFactory(field_name='COUNTRY', label='Country', field_type='list')
+    study = StudyFactory(study_id='AAA')
+    StudyVariableFactory(study_field__field_name='COUNTRY', with_studies=[study], value='USA,CAN,MEX')
+    request = rf.get(reverse('study-list'))
+    study_list_view = _get_instance(StudyListView, request=request)
+    study_dict =  study_list_view.get_study_dict()
+    assert study_dict[0]['Country'] == 'USA, CAN, MEX'
+
+
+@pytest.mark.django_db
 def test_study_list_view_table_fields_reflect_changes(rf):
     start_year = StudyFieldFactory(label='start_year')
     stop_year = StudyFieldFactory(label='stop_year')
