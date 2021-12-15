@@ -2,7 +2,7 @@
 FROM python:3.6
 
 # File Author / Maintainer
-MAINTAINER Preva
+MAINTAINER Preva Group
 
 #add project files to the usr/src/app folder
 ADD ../hbgd_data_store_server /srv/app

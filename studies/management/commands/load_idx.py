@@ -17,10 +17,10 @@ import os
 import zipfile
 import fnmatch
 
-from pandas import read_csv
 from django.core.management.base import BaseCommand, CommandError
 
 from ...models import Study, Count, Variable, Domain, EMPTY_IDENTIFIERS
+from ...utils import Utils
 
 # Regex file pattern defining the naming convention of IDX files
 FILE_PATTERN = r'^IDX_(\w*)\.csv'
@@ -148,8 +148,7 @@ def process_idx_df(df, domain, **kwargs):
 
     for required in [study_id_field, count_subj_field, count_obs_field]:
         if required not in df.columns:
-            raise ValueError('IDX file does not contain %s column, '
-                             'skipping.' % required)
+            raise ValueError('Skipping IDX file. Does not contain "{0}" column. Contains columns: {1}'.format(required, ', '.join(df.columns)))
 
     valid_qualifiers = get_valid_qualifiers(df.columns)
 
@@ -198,39 +197,38 @@ class Command(BaseCommand):
     def process_file(self, filepath, zip_file=None, **kwargs):
         # Ensure the file matches the FILE_PATTERN
         basename = os.path.basename(filepath)
+        self.stdout.write('Processing %s' % basename)
+
         match = re.search(FILE_PATTERN, basename)
         if not match:
+            self.stdout.write('Skipping filename: "{0}", does not match pattern: {1}'.format(basename, FILE_PATTERN))
             return False
 
         # Ensure that Domain exists
         domain = match.group(1).upper()
         try:
             domain = Domain.objects.get(code=domain)
+            self.stdout.write('Using domain: {0} - {1}'.format(domain.code, domain.label))
         except Domain.DoesNotExist:
             self.stderr.write('Could not find domain: {0}'.format(domain))
             return False
 
         # Load file
         try:
-            if zip_file:
-                with zip_file.open(filepath) as f:
-                    df = read_csv(f, encoding='windows-1254')
-            else:
-                with open(filepath) as f:
-                    df = read_csv(f, encoding='windows-1254')
+            df = Utils.read_csv(filepath, zip_file=zip_file)
         except Exception as ex:
             self.stderr.write(str(ex))
-            self.stderr.write('%s could not be read ensure '
-                              'it is a valid csv file.' % basename)
+            self.stderr.write('%s could not be read ensure it is a valid csv file.' % basename)
             return False
 
         # Process dataframe
-        self.stdout.write('Processing %s' % basename)
         try:
             process_idx_df(df, domain, **kwargs)
+            return True
         except ValueError as e:
             self.stderr.write(str(e))
-        return True
+
+        return False
 
     def handle(self, *args, **options):
         if options['clear']:

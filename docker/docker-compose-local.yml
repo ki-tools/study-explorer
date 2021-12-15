@@ -6,7 +6,7 @@ services:
     ports:
       - "5432:5432"
   web:
-    image: prevagroup/studyexplorer.io
+    image: studyexplorer
     ports:
       - "8000:8000"
     environment:

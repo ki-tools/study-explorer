@@ -14,10 +14,11 @@
 
 import os
 
-from pandas import read_csv, read_excel, notnull
+from pandas import  read_excel, notnull
 from django.core.management.base import BaseCommand, CommandError
 
 from ...models import StudyField, Study, StudyVariable, EMPTY_IDENTIFIERS, Filter, Domain
+from ...utils import Utils
 
 ENCODINGS = ['latin-1', 'utf-8']
 
@@ -85,19 +86,15 @@ class Command(BaseCommand):
         for encoding in ENCODINGS:
             try:
                 if options['file'].endswith('csv'):
-
                     msg = 'File could not be opened ensure it is a valid csv file.'
-                    study_info = read_csv(options['file'],
-                                          encoding=encoding, **kwargs)
+                    study_info = Utils.read_csv(options['file'], encoding=encoding, **kwargs)
                 elif options['file'].endswith(('xls', 'xlsx')):
                     msg = 'File could not be opened ensure it is a valid Excel file.'
-                    study_info = read_excel(options['file'],
-                                            encoding=encoding, **kwargs)
+                    study_info = read_excel(options['file'], encoding=encoding, **kwargs)
                 else:
                     # Otherwise - assume it's a csv
                     msg = 'Please ensure your upload is a valid csv file.'
-                    study_info = read_csv(options['file'],
-                                          encoding=encoding, **kwargs)
+                    study_info = Utils.read_csv(options['file'], encoding=encoding, **kwargs)
             except:
                 continue
         if study_info is None:

@@ -9,6 +9,12 @@ ifeq (deploy_current_branch,$(firstword $(MAKECMDGOALS)))
   $(eval $(DEPLOY_ARGS):;@:)
 endif
 
+
+.PHONY: createsuperuser
+createsuperuser:
+	./manage.py createsuperuser
+
+
 .PHONY: devserve
 devserve:
 	./manage.py runserver
@@ -22,6 +28,11 @@ test:
 .PHONY: devserve_heroku
 devserve_heroku:
 	heroku local
+
+
+.PHONY: docs
+docs:
+	./manage.py collectstatic && cd ./docs && make html && cd ..
 
 
 .PHONY: deploy

@@ -1,9 +1,14 @@
 # HBGDki Study Explorer
 
 # Description
-The Study Explorer is a tool that helps you to understand the contents of individual studies contributed to the HBGD knowledge base.
 
-The Study Explorer tool, as known as the Data Store Explorer, presents information about the experimental design of the individual studies, such as whether a study is longitudinal or cross-sectional, interventional, or observational, and the ages, calendar years, and countries of study enrollment. The tool enables you to search for the presence of standardized data fields such as anthropometry measures, biomarkers, microbiology tests, and nutrient intake quantities.
+The Study Explorer is a tool that helps you to understand the contents of individual studies contributed to the HBGD
+knowledge base.
+
+The Study Explorer tool, as known as the Data Store Explorer, presents information about the experimental design of the
+individual studies, such as whether a study is longitudinal or cross-sectional, interventional, or observational, and
+the ages, calendar years, and countries of study enrollment. The tool enables you to search for the presence of
+standardized data fields such as anthropometry measures, biomarkers, microbiology tests, and nutrient intake quantities.
 
 ## Instructions for installing with Docker
 
@@ -43,7 +48,10 @@ Pull from Docker Hub & Run
     docker pull prevagroup/studyexplorer.io
     docker run -it -p 8000:8000 -e SECRET_KEY=foobar prevagroup/studyexplorer.io
 
-Note that the application is running, but will be unable to connect to a database. If you pass in the following environment vars corresponding to a valid postgres server that the docker container can access, you can connect to a database. However, please note that a Docker container is set up in a private network bridged to the host machine, so you may have to do some digging to find the correct IP address for connections.
+Note that the application is running, but will be unable to connect to a database. If you pass in the following
+environment vars corresponding to a valid postgres server that the docker container can access, you can connect to a
+database. However, please note that a Docker container is set up in a private network bridged to the host machine, so
+you may have to do some digging to find the correct IP address for connections.
 
 * RDS_PORT
 * RDS_DB_NAME
@@ -53,113 +61,89 @@ Note that the application is running, but will be unable to connect to a databas
 
 OR
 
-* DATABASE_URL
+* DATABASE_URL (`postgres://{user}:{password}@{hostname}:{port}`)
 
-To run in a production environment, either consult your cloud hosting provider's documentation for installing an application from a Docker image, or set up a server running docker and mapping the host's port 80 to the docker container's port 8000 (you will need admin/root privileges).
+To run in a production environment, either consult your cloud hosting provider's documentation for installing an
+application from a Docker image, or set up a server running docker and mapping the host's port 80 to the docker
+container's port 8000 (you will need admin/root privileges).
 
-# Setup (Legacy)
+# Development Setup
 
-### Conda environment
-
-```sh
-$ conda env create
-$ source activate hbgd-data-store-server
-```
-
-If you want to install postgres in your conda environment:
-```sh
-$ conda install postgresql
-$ mkdir data
-$ initdb -D data
-# Launch postgres
-$ postgres -D data
-# In a new terminal
-$ createuser -s hbgd --pwprompt --createdb --no-superuser --no-createrole
-# setup a password for the user
-$ createdb -U hbgd --locale=en_US.utf-8 -E utf-8 -O hbgd hbgd -T template0
-```
-
-Alternatively, you can use vagrant on your development machine (available via
-brew cask install vagrant). Then run the command:
-
-```sh
-$ vagrant up
-```
-
-This creates a development database with the user/password of hbgd/123456. You
-may change this inside of bootstrap.sh.
-
-### Django
+- Create or have a Postgresql instance running and accessible.
+- Create virtual environment: `python3.6 -m venv .venv`
+- Activate virtual environment: `source .venv/bin/activate`
+- Install packages: `pip install -r requirements.txt` and `pip install -r requirements-dev.txt`
 
 Setup your environment variables:
+
 ```sh
 export DEBUG=True
 export DB_PASSWORD='your db password'
-export MY_SECRET_KEY='your secret key'
+export SECRET_KEY='your secret key'
 ```
+
+Create the database:
+`createdb --locale=en_US.utf-8 -E utf-8 -O hbgd hbgd -T template0`
 
 Migrate the database:
+`make migrate`
 
-```sh
-$ ./manage.py migrate
+Create a super user:
+`make createsuperuser`
+
+Load Test Data:
+
+```shell
+psql -h localhost hbgd -f data/sql/000_reset_db.sql
+psql -h localhost hbgd -f data/sql/001_import_studies_domain.sql
+python manage.py load_studies data/csv/studyinfo.csv
+psql -h localhost hbgd -f data/sql/002_update_studies_studyfield.sql
+python manage.py load_idx data/csv/idx.zip
+psql -h localhost hbgd -f data/sql/003_import_studies_filter.sql
 ```
 
-Load the sample data (optional):
-```sh
-$ ./manage.py loaddata ../sampledata.json
-```
+## Running locally
 
-Make a superuser:
-```
-$ ./manage.py createsuperuser
-```
-
-### Assets
-
-* Install compass  ``gem install compass``
-* Use compass to build css from scss
-* Edit scss not stylesheets directory
-* Check in built css.
-
-### Run it
-
-```sh
-$ ./manage.py runserver
-```
-
-Now go to:
- - Home page http://localhost:8000
- - Admin page http://localhost:8000/admin
- - User & Developer Documentation http://localhost:8000/docs
-
-# Running locally
 If you've already been through setup once:
 
 ```sh
-$ postgres -D data
-$ ./manage.py runserver
+$ make madeserve
 ```
 
-# Running tests
-```sh
-$ ./manage.py test --driver Firefox -v
-```
-or
+Now go to:
+
+- Home page http://localhost:8000
+- Admin page http://localhost:8000/admin
+- User & Developer Documentation http://localhost:8000/docs
+
+## Migrations
+
+Locally: `make migrate`
+
+On Dokku Server: `dokku run se-<name> make migrate` (e.g., `dokku run se-staging make migrate`)
+
+## Documentation
+
+Generate the docs: `make docs`
+
+## Running tests
+
 ```shell
 make test
 ```
-
 
 # Dokku Hosting
 
 ## Server Configuration
 
 - Increase nginx timeout. Update `/etc/nginx/conf.d/dokku.conf` add the following lines:
+
 ```text
 proxy_connect_timeout   3600;
 proxy_send_timeout      3600;
 proxy_read_timeout      3600;
 ```
+
 - Change the `proxy_read_timeout` from `60s` to `60m` in `/home/dokku/app-name/nginx.config`.
 
 - Restart nginx: `sudo systemctl restart nginx`
@@ -176,7 +160,8 @@ Execute these commands on the Dokku server:
 - Create the app: `dokku apps:create se-<name>` (e.g., `dokku apps:create se-www`)
 - Create the database: `dokku postgres:create se-<name>-db`
 - Link the database to the app: `dokku postgres:link se-<name>-db se-<name>`
-- Set the ENV variables: `dokku config:set se-<name> WEB_CONCURRENCY=4 ALLOWED_HOSTS=".kiglobalhealth.org,.hbgdki.org,.studyexplorer.io" SECRET_KEY="<your-secret-key> GA_MEASUREMENT_ID=<your-google-analytics-id>"`
+- Set the ENV
+  variables: `dokku config:set se-<name> WEB_CONCURRENCY=4 ALLOWED_HOSTS=".kiglobalhealth.org,.hbgdki.org,.studyexplorer.io" SECRET_KEY="<your-secret-key> GA_MEASUREMENT_ID=<your-google-analytics-id>"`
 - Set the domain: `dokku domains:add se-<name> <name>.studyexplorer.io`
 - Import the database export: `dokku postgres:import se-<name>-db < se-<name>.dump`
 - Install the SSL Certificates: `dokku letsencrypt se-<name>`
@@ -191,14 +176,78 @@ Execute these commands on your local system:
 - `git push se-<name> master` (e.g., `git push se-staging master`)
 
 Or via Make:
+
 - `make deploy <name>` (e.g., `make deploy staging`)
 
 To deploy your currently checked out branch:
+
 - `make deploy_current_branch <name>` (e.g., `make deploy_current_branch staging`)
 
+---
 
-## Migrations
+# Setup (Legacy)
 
-Locally: `make migrate`
+### Conda environment
 
-On Dokku Server: `dokku run se-<name> make migrate` (e.g., `dokku run se-staging make migrate`)
+```sh
+$ conda env create
+$ source activate hbgd-data-store-server
+```
+
+If you want to install postgres in your conda environment:
+
+```sh
+$ conda install postgresql
+$ mkdir data
+$ initdb -D data
+# Launch postgres
+$ postgres -D data
+# In a new terminal
+$ createuser -s hbgd --pwprompt --createdb --no-superuser --no-createrole
+# setup a password for the user
+$ createdb -U hbgd --locale=en_US.utf-8 -E utf-8 -O hbgd hbgd -T template0
+```
+
+Alternatively, you can use vagrant on your development machine (available via brew cask install vagrant). Then run the
+command:
+
+```sh
+$ vagrant up
+```
+
+This creates a development database with the user/password of hbgd/123456. You may change this inside of bootstrap.sh.
+
+### Django
+
+Setup your environment variables:
+
+```sh
+export DEBUG=True
+export DB_PASSWORD='your db password'
+export SECRET_KEY='your secret key'
+```
+
+Migrate the database:
+
+```sh
+$ ./manage.py migrate
+```
+
+Load the sample data (optional):
+
+```sh
+$ ./manage.py loaddata ../sampledata.json
+```
+
+Make a superuser:
+
+```
+$ ./manage.py createsuperuser
+```
+
+### Assets
+
+* Install compass  ``gem install compass``
+* Use compass to build css from scss
+* Edit scss not stylesheets directory
+* Check in built css.

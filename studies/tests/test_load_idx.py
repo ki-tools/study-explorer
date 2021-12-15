@@ -291,7 +291,7 @@ def test_load_idx_skip_on_missing_studyid_column(command_kwargs):
     df = _create_sample_idx_df()
     del df[deleted]
 
-    msg = 'IDX file does not contain %s column, skipping.' % deleted
+    msg = 'Does not contain "%s" column.' % deleted
     with pytest.raises(ValueError, match=msg):
         domain = DomainFactory()
         load_idx.process_idx_df(df, domain=domain, **command_kwargs)
@@ -304,7 +304,7 @@ def test_load_idx_skip_on_missing_count_subj_column(command_kwargs):
     df = _create_sample_idx_df()
     del df[deleted]
 
-    msg = 'IDX file does not contain %s column, skipping.' % deleted
+    msg = 'Does not contain "%s" column.' % deleted
     with pytest.raises(ValueError, match=msg):
         domain = DomainFactory()
         load_idx.process_idx_df(df, domain=domain, **command_kwargs)
@@ -317,7 +317,7 @@ def test_load_idx_skip_on_missing_count_obs_column(command_kwargs):
     df = _create_sample_idx_df()
     del df[deleted]
 
-    msg = 'IDX file does not contain %s column, skipping.' % deleted
+    msg = 'Does not contain "%s" column.' % deleted
     with pytest.raises(ValueError, match=msg):
         domain = DomainFactory()
         load_idx.process_idx_df(df, domain=domain, **command_kwargs)
