@@ -107,7 +107,7 @@ psql -h localhost hbgd -f data/sql/003_import_studies_filter.sql
 If you've already been through setup once:
 
 ```sh
-$ make madeserve
+$ make devserve
 ```
 
 Now go to:
