@@ -9,6 +9,17 @@ ifeq (deploy_current_branch,$(firstword $(MAKECMDGOALS)))
   $(eval $(DEPLOY_ARGS):;@:)
 endif
 
+.PHONY: venv
+venv:
+	python3.6 -m venv .venv
+
+
+.PHONY: pip_install
+pip_install:
+	pip install --upgrade pip
+	pip install -r requirements.txt
+	pip install -r requirements-dev.txt
+
 
 .PHONY: createsuperuser
 createsuperuser:
