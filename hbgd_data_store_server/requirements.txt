@@ -11,7 +11,7 @@ django-tables2==1.2.6
 factory_boy==2.8.1
 pandas==0.18.1
 psycopg2==2.7.3.2
-numpy==1.16.0
+numpy==1.22.0
 pytest==5.3.2
 pytest-cov==2.8.1
 pytest-django==3.7.0
