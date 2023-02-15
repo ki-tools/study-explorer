@@ -69,10 +69,10 @@ container's port 8000 (you will need admin/root privileges).
 
 # Development Setup
 
-Python Version: 3.6.9
+Python Version: 3.7.16
 
 - Create or have a Postgresql instance running and accessible.
-- Create virtual environment: `make venv` or `python3.6 -m venv .venv`
+- Create virtual environment: `make venv` or `python3.7 -m venv .venv`
 - Activate virtual environment: `source .venv/bin/activate`
 - Install packages: `make pip_install` or `pip install -r requirements.txt` and `pip install -r requirements-dev.txt`
 

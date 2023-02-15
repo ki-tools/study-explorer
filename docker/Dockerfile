@@ -1,5 +1,5 @@
 # set the base image
-FROM python:3.6
+FROM python:3.7
 
 # File Author / Maintainer
 MAINTAINER Preva Group
