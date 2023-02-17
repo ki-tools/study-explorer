@@ -1,0 +1,35 @@
+{% load static %}
+
+<!doctype html>
+
+<html>
+<head>
+  <meta charset="utf-8">
+    {% if GA_MEASUREMENT_ID %}
+      <!-- Global site tag (gtag.js) - Google Analytics -->
+      <script async src="https://www.googletagmanager.com/gtag/js?id={{ GA_MEASUREMENT_ID }}"></script>
+      <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', '{{ GA_MEASUREMENT_ID }}');
+      </script>
+    {% endif %}
+  <title>HBGD Data Store Server</title>
+  <meta name="description" content="HBGD Data Store Server - Explore HBGD datasets">
+  <meta name="author" content="Continuum Analytics">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link href="https://fonts.googleapis.com/css?family=Roboto+Mono|Roboto:400,700" rel="stylesheet">
+  <link href="{% static 'stylesheets/app.css' %}" media="screen, projection" rel="stylesheet" type="text/css" />
+  <link rel="stylesheet" href="{% static 'bower_components/ion.rangeSlider/css/ion.rangeSlider.css' %}" />
+  <link rel="stylesheet" href="{% static 'bower_components/ion.rangeSlider/css/ion.rangeSlider.skinFlat.css' %}" />
+
+  {% block extrahead %}
+  {% endblock extrahead %}
+</head>
+
+<body>
+  {% block main %}
+  {% endblock main %}
+</body>
+</html>
