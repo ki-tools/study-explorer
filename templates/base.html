@@ -5,6 +5,19 @@
 <html>
 <head>
   <meta charset="utf-8">
+    {% if ONETRUST_DOMAIN_SCRIPT %}
+        <!-- OneTrust Cookies Consent Notice start for studyexplorer.io -->
+        <script src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js"
+                type="text/javascript"
+                charset="UTF-8"
+                data-domain-script="{{ ONETRUST_DOMAIN_SCRIPT }}">
+        </script>
+        <script type="text/javascript">
+        function OptanonWrapper() { }
+        </script>
+        <!-- OneTrust Cookies Consent Notice end for studyexplorer.io -->
+    {% endif %}
+
     {% if GA_MEASUREMENT_ID %}
       <!-- Global site tag (gtag.js) - Google Analytics -->
       <script async src="https://www.googletagmanager.com/gtag/js?id={{ GA_MEASUREMENT_ID }}"></script>

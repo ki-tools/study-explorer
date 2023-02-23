@@ -22,6 +22,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.common.exceptions import NoSuchElementException
 
 from django.core.urlresolvers import reverse
 from django.core.management import call_command
@@ -71,22 +72,29 @@ def test_title_of_home_page_is_HBGD_Data_Store_Server(page):
     assert 'HBGD Data Store Server' in page.title
 
 
-def test_it_shows_the_cookie_banner(page):
-    cookie_banner = page.find_element_by_class_name('cookie-banner')
+def test_it_shows_the_cookie_banner(selenium, page):
+    WebDriverWait(selenium, 3).until(EC.visibility_of_element_located((By.ID, 'onetrust-banner-sdk')))
+    cookie_banner = page.find_element_by_id('onetrust-banner-sdk')
     assert cookie_banner.is_displayed() is True
 
 
 def test_it_hides_the_cookie_banner(page, live_server, selenium, hide_cookie_banner):
-    cookie_banner = page.find_element_by_class_name('cookie-banner')
-    assert cookie_banner.is_displayed() is True
+    WebDriverWait(selenium, 3).until(EC.visibility_of_element_located((By.ID, 'onetrust-banner-sdk')))
+    cookie_banner = page.find_element_by_id('onetrust-banner-sdk')
+
 
     hide_cookie_banner()
     assert cookie_banner.is_displayed() is False
 
-    # reload the page and make sure the banner does not show
+    # reload the page and make sure the banner does not show and the widget does.
     selenium.get(live_server.url)
-    cookie_banner = selenium.find_element_by_class_name('cookie-banner')
-    assert cookie_banner.is_displayed() is False
+    WebDriverWait(selenium, 3).until(EC.visibility_of_element_located((By.ID, 'ot-sdk-btn-floating')))
+    with pytest.raises(NoSuchElementException):
+        selenium.find_element_by_id('onetrust-banner-sdk')
+    manage_button = page.find_element_by_id('ot-sdk-btn-floating')
+    assert manage_button.is_displayed() is True
+
+
 
 
 def test_admin_panel_redirect_if_no_studies(page):

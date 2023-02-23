@@ -28,6 +28,13 @@ import os
 import getpass
 from urllib.parse import urlparse
 
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+   pass
+
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -252,3 +259,9 @@ CRISPY_TEMPLATE_PACK = 'foundation-5'
 ################# DOCS
 DOCS_ROOT = os.path.join(BASE_DIR, 'docs/build/html')
 DOCS_ACCESS = 'staff'
+
+#################  Google Analytics
+GA_MEASUREMENT_ID = os.environ.get('GA_MEASUREMENT_ID', None)
+
+################# OneTrust
+ONETRUST_DOMAIN_SCRIPT = os.environ.get('ONETRUST_DOMAIN_SCRIPT', None)
