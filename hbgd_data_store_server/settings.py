@@ -261,7 +261,4 @@ DOCS_ROOT = os.path.join(BASE_DIR, 'docs/build/html')
 DOCS_ACCESS = 'staff'
 
 #################  Google Analytics
-GA_MEASUREMENT_ID = os.environ.get('GA_MEASUREMENT_ID', None)
-
-################# OneTrust
-ONETRUST_DOMAIN_SCRIPT = os.environ.get('ONETRUST_DOMAIN_SCRIPT', None)
+GTM_CONTAINER_ID = os.environ.get('GTM_CONTAINER_ID', None)

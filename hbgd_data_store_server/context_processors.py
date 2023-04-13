@@ -20,6 +20,5 @@ def export_vars(request):
     data = {}
     data['CONTINUOUS_INTEGRATION'] = os.environ.get("CONTINUOUS_INTEGRATION", False)
     data['DEBUG'] = settings.DEBUG
-    data['GA_MEASUREMENT_ID'] = settings.GA_MEASUREMENT_ID
-    data['ONETRUST_DOMAIN_SCRIPT'] = settings.ONETRUST_DOMAIN_SCRIPT
+    data['GTM_CONTAINER_ID'] = settings.GTM_CONTAINER_ID
     return data

@@ -5,29 +5,15 @@
 <html>
 <head>
   <meta charset="utf-8">
-    {% if ONETRUST_DOMAIN_SCRIPT %}
-        <!-- OneTrust Cookies Consent Notice start for studyexplorer.io -->
-        <script src="https://cdn.cookielaw.org/scripttemplates/otSDKStub.js"
-                type="text/javascript"
-                charset="UTF-8"
-                data-domain-script="{{ ONETRUST_DOMAIN_SCRIPT }}">
-        </script>
-        <script type="text/javascript">
-        function OptanonWrapper() { }
-        </script>
-        <!-- OneTrust Cookies Consent Notice end for studyexplorer.io -->
-    {% endif %}
-
-    {% if GA_MEASUREMENT_ID %}
-      <!-- Global site tag (gtag.js) - Google Analytics -->
-      <script async src="https://www.googletagmanager.com/gtag/js?id={{ GA_MEASUREMENT_ID }}"></script>
-      <script>
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', '{{ GA_MEASUREMENT_ID }}');
-      </script>
-    {% endif %}
+  {% if GTM_CONTAINER_ID %}
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','{{ GTM_CONTAINER_ID }}');</script>
+  <!-- End Google Tag Manager -->
+  {% endif %}
   <title>HBGD Data Store Server</title>
   <meta name="description" content="HBGD Data Store Server - Explore HBGD datasets">
   <meta name="author" content="Continuum Analytics">
@@ -42,6 +28,12 @@
 </head>
 
 <body>
+  {% if GTM_CONTAINER_ID %}
+  <!-- Google Tag Manager (noscript) -->
+  <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ GTM_CONTAINER_ID }}"
+  height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+  {% endif %}
   {% block main %}
   {% endblock main %}
 </body>
