@@ -163,7 +163,7 @@ Execute these commands on the Dokku server:
 - Create the database: `dokku postgres:create se-<name>-db`
 - Link the database to the app: `dokku postgres:link se-<name>-db se-<name>`
 - Set the ENV
-  variables: `dokku config:set se-<name> WEB_CONCURRENCY=4 ALLOWED_HOSTS=".kiglobalhealth.org,.hbgdki.org,.studyexplorer.io" SECRET_KEY="<your-secret-key> GA_MEASUREMENT_ID=<your-google-analytics-id>"`
+  variables: `dokku config:set se-<name> WEB_CONCURRENCY=4 ALLOWED_HOSTS=".kiglobalhealth.org,.hbgdki.org,.studyexplorer.io" SECRET_KEY="<your-secret-key> GTM_CONTAINER_ID=<your-google-tag-container-id>"`
 - Set the domain: `dokku domains:add se-<name> <name>.studyexplorer.io`
 - Import the database export: `dokku postgres:import se-<name>-db < se-<name>.dump`
 - Install the SSL Certificates: `dokku letsencrypt se-<name>`

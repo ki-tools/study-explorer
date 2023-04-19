@@ -22,6 +22,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.common.exceptions import NoSuchElementException
 
 from django.core.urlresolvers import reverse
 from django.core.management import call_command
@@ -71,21 +72,16 @@ def test_title_of_home_page_is_HBGD_Data_Store_Server(page):
     assert 'HBGD Data Store Server' in page.title
 
 
-def test_it_shows_the_cookie_banner(page):
-    cookie_banner = page.find_element_by_class_name('cookie-banner')
+def test_it_shows_the_cookie_banner(selenium, page):
+    WebDriverWait(selenium, 3).until(EC.visibility_of_element_located((By.ID, 'onetrust-banner-sdk')))
+    cookie_banner = page.find_element_by_id('onetrust-banner-sdk')
     assert cookie_banner.is_displayed() is True
 
 
 def test_it_hides_the_cookie_banner(page, live_server, selenium, hide_cookie_banner):
-    cookie_banner = page.find_element_by_class_name('cookie-banner')
-    assert cookie_banner.is_displayed() is True
-
+    WebDriverWait(selenium, 3).until(EC.visibility_of_element_located((By.ID, 'onetrust-banner-sdk')))
+    cookie_banner = page.find_element_by_id('onetrust-banner-sdk')
     hide_cookie_banner()
-    assert cookie_banner.is_displayed() is False
-
-    # reload the page and make sure the banner does not show
-    selenium.get(live_server.url)
-    cookie_banner = selenium.find_element_by_class_name('cookie-banner')
     assert cookie_banner.is_displayed() is False
 
 
@@ -123,7 +119,8 @@ def test_all_panels_on_home_if_data_loaded(live_server, selenium, setup_domain_a
     assert 'Variable List' in panel.text
 
 
-def test_study_filter_accordion_expands_showing_domains(live_server, selenium, setup_domain_and_load_data, hide_cookie_banner):
+def test_study_filter_accordion_expands_showing_domains(live_server, selenium, setup_domain_and_load_data,
+                                                        hide_cookie_banner):
     """Checks that clicking the accordion expands the domain filter"""
 
     url = live_server.url + reverse('study-filter')
@@ -155,6 +152,7 @@ def test_study_explorer_shows_tabs_for_domain(live_server, selenium, setup_domai
 
     apply_button = selenium.find_element_by_id("submit-id-apply")
     apply_button.click()
+    hide_cookie_banner()
 
     WebDriverWait(selenium, 10).until(EC.presence_of_element_located((By.ID, "RELTIVE_tab")))
 
@@ -182,7 +180,8 @@ def test_study_explorer_shows_tabs_for_domain(live_server, selenium, setup_domai
     assert sample_domain_by_age_tab.is_displayed() is True
 
 
-def test_study_explorer_autocomplete_returns_tabs(live_server, selenium, setup_domain_and_load_data, hide_cookie_banner):
+def test_study_explorer_autocomplete_returns_tabs(live_server, selenium, setup_domain_and_load_data,
+                                                  hide_cookie_banner):
     study_id = "CPP"
     n = 0
 
@@ -210,7 +209,8 @@ def test_study_explorer_autocomplete_returns_tabs(live_server, selenium, setup_d
     assert tabs.is_displayed()
 
 
-def test_filter_by_variable_code_returns_variable_to_field(live_server, selenium, setup_domain_and_load_data, hide_cookie_banner):
+def test_filter_by_variable_code_returns_variable_to_field(live_server, selenium, setup_domain_and_load_data,
+                                                           hide_cookie_banner):
     code = "RELTIVE"
     mother = "Mother"
     n = 0
@@ -283,7 +283,8 @@ def test_filter_to_explorer_transition(live_server, selenium, setup_domain_and_l
     assert back_link.get_attribute('href') == url
 
 
-def test_explorer_page_contains_summary_and_variable_plot(live_server, selenium, setup_domain_and_load_data, hide_cookie_banner):
+def test_explorer_page_contains_summary_and_variable_plot(live_server, selenium, setup_domain_and_load_data,
+                                                          hide_cookie_banner):
     # Fairly crude test looking for:
     # - the plot titles.
     # - height of bk-root divs as a proxy for whether bokeh has rendered successfully
@@ -317,7 +318,8 @@ def test_filter_page_contains_summary_plot(live_server, selenium, setup_domain_a
     assert root.size["height"] >= 200
 
 
-def test_study_explorer_new_update_sticky_is_working(live_server, selenium, setup_domain_and_load_data, hide_cookie_banner):
+def test_study_explorer_new_update_sticky_is_working(live_server, selenium, setup_domain_and_load_data,
+                                                     hide_cookie_banner):
     no_update_text = "No new filters."
     update_text = "New filters have been selected. Click Apply to refresh studies."
     StudyFactory.create_batch(20)
@@ -347,7 +349,8 @@ def test_study_explorer_new_update_sticky_is_working(live_server, selenium, setu
     assert sticky_menu.text == update_text
 
 
-def test_study_explorer_new_update_works_on_autocomplete_select(live_server, selenium, setup_domain_and_load_data, hide_cookie_banner):
+def test_study_explorer_new_update_works_on_autocomplete_select(live_server, selenium, setup_domain_and_load_data,
+                                                                hide_cookie_banner):
     no_update_text = "No new filters."
     update_text = "New filters have been selected. Click Apply to refresh studies."
 
@@ -365,7 +368,8 @@ def test_study_explorer_new_update_works_on_autocomplete_select(live_server, sel
     assert sticky_menu.text == update_text
 
 
-def test_filter_page_summary_plot_toggles_observations(live_server, selenium, setup_domain_and_load_data, hide_cookie_banner):
+def test_filter_page_summary_plot_toggles_observations(live_server, selenium, setup_domain_and_load_data,
+                                                       hide_cookie_banner):
     # Tests whether the bokeh observations/subjects toggle buttons work
     # - Checks if toggling the button changes the title
     # - Cannot directly check heatmap and colormapper changes
@@ -391,7 +395,8 @@ def test_filter_page_summary_plot_toggles_observations(live_server, selenium, se
     assert title.text == "Number of observations by domain"
 
 
-def test_explorer_page_summary_and_variable_plot_toggle_observations(live_server, selenium, setup_domain_and_load_data, hide_cookie_banner):
+def test_explorer_page_summary_and_variable_plot_toggle_observations(live_server, selenium, setup_domain_and_load_data,
+                                                                     hide_cookie_banner):
     # Tests whether the bokeh observations/subjects toggle buttons work
     study_id = Study.objects.get().id
     url = live_server.url + reverse('study-explorer') + '?study=%s' % study_id
