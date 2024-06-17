@@ -14,7 +14,7 @@
 
 import os
 
-from pandas import  read_excel, notnull
+from pandas import read_excel, notnull
 from django.core.management.base import BaseCommand, CommandError
 
 from ...models import StudyField, Study, StudyVariable, EMPTY_IDENTIFIERS, Filter, Domain
@@ -107,75 +107,85 @@ class Command(BaseCommand):
                    'uploaded file'.format(study_id_field))
             raise CommandError(msg)
 
-        self.process_studies(study_info)
+        try:
+            self.process_studies(study_info)
+        except Exception as ex:
+            raise CommandError(str(ex))
 
-        if options['keep_fields'] or not options['clear']:
-            for study_field in StudyField.objects.all():
-                try:
-                    study_field.clean()
-                except:
-                    for study_variable in StudyVariable.objects.filter(study_field=study_field):
-                        study_variable.clean()
+        try:
+            if options['keep_fields'] or not options['clear']:
+                for study_field in StudyField.objects.all():
+                    try:
+                        study_field.clean()
+                    except:
+                        for study_variable in StudyVariable.objects.filter(study_field=study_field):
+                            study_variable.clean()
 
-        for field in existing_fields:
-            field_name = field['field_name']
-            label = field['label']
-            big_order = field['big_order']
-            lil_order = field['lil_order']
-            study_field = StudyField.objects.filter(field_name=field_name).first()
-            if study_field:
-                if study_field.label != label:
-                    self.stdout.write('Set StudyField label back to: "{0}" from: "{1}"'.format(label, study_field.label))
-                    study_field.label = label
-                if study_field.big_order != big_order:
-                    self.stdout.write('Set StudyField big_order back to: "{0}" from: "{1}"'.format(big_order, study_field.big_order))
-                    study_field.big_order = big_order
-                if study_field.lil_order != lil_order:
-                    self.stdout.write(
-                        'Set StudyField lil_order back to: "{0}" from: "{1}"'.format(lil_order, study_field.lil_order))
-                    study_field.lil_order = lil_order
-                study_field.save()
+            for field in existing_fields:
+                field_name = field['field_name']
+                label = field['label']
+                big_order = field['big_order']
+                lil_order = field['lil_order']
+                study_field = StudyField.objects.filter(field_name=field_name).first()
+                if study_field:
+                    if study_field.label != label:
+                        self.stdout.write(
+                            'Set StudyField label back to: "{0}" from: "{1}"'.format(label, study_field.label))
+                        study_field.label = label
+                    if study_field.big_order != big_order:
+                        self.stdout.write(
+                            'Set StudyField big_order back to: "{0}" from: "{1}"'.format(big_order,
+                                                                                         study_field.big_order))
+                        study_field.big_order = big_order
+                    if study_field.lil_order != lil_order:
+                        self.stdout.write(
+                            'Set StudyField lil_order back to: "{0}" from: "{1}"'.format(lil_order,
+                                                                                         study_field.lil_order))
+                        study_field.lil_order = lil_order
+                    study_field.save()
 
-        for filter in existing_filters:
-            label = filter['label']
-            domain_code = filter['domain_code']
-            study_field_name = filter['study_field_name']
-            domain = None
-            study_field = None
+            for filter in existing_filters:
+                label = filter['label']
+                domain_code = filter['domain_code']
+                study_field_name = filter['study_field_name']
+                domain = None
+                study_field = None
 
-            if domain_code:
-                domain = Domain.objects.filter(code=domain_code).first()
-                if not domain:
-                    self.stdout.write('Cannot recreate filter, domain not found: {0}'.format(domain_code))
-                    continue
+                if domain_code:
+                    domain = Domain.objects.filter(code=domain_code).first()
+                    if not domain:
+                        self.stdout.write('Cannot recreate filter, domain not found: {0}'.format(domain_code))
+                        continue
 
-            if study_field_name:
-                study_field = StudyField.objects.filter(field_name=study_field_name).first()
-                if not study_field:
-                    self.stdout.write('Cannot recreate filter, study_field not found: {0}'.format(study_field_name))
-                    continue
+                if study_field_name:
+                    study_field = StudyField.objects.filter(field_name=study_field_name).first()
+                    if not study_field:
+                        self.stdout.write('Cannot recreate filter, study_field not found: {0}'.format(study_field_name))
+                        continue
 
-            existing_filter = Filter.objects.filter(domain=domain, study_field=study_field, label=label).first()
-            if not existing_filter:
-                new_filter = Filter(
-                    domain=domain,
-                    study_field=study_field,
-                    label=label,
-                    widget=filter['widget'],
-                    widget_json=filter['widget_json']
-                )
-                new_filter.save()
-                self.stdout.write('Recreated filter: Domain: {0}, Study Field: {1}, Label: {2}'.format(
-                    getattr(new_filter.domain, 'code', 'None'),
-                    getattr(new_filter.study_field, 'label', 'None'),
-                    new_filter.label
-                ))
-            else:
-                self.stdout.write('Filter exists: Domain: {0}, Study Field: {1}, Label: {2}'.format(
-                    getattr(existing_filter.domain, 'code', 'None'),
-                    getattr(existing_filter.study_field, 'label', 'None'),
-                    existing_filter.label
-                ))
+                existing_filter = Filter.objects.filter(domain=domain, study_field=study_field, label=label).first()
+                if not existing_filter:
+                    new_filter = Filter(
+                        domain=domain,
+                        study_field=study_field,
+                        label=label,
+                        widget=filter['widget'],
+                        widget_json=filter['widget_json']
+                    )
+                    new_filter.save()
+                    self.stdout.write('Recreated filter: Domain: {0}, Study Field: {1}, Label: {2}'.format(
+                        getattr(new_filter.domain, 'code', 'None'),
+                        getattr(new_filter.study_field, 'label', 'None'),
+                        new_filter.label
+                    ))
+                else:
+                    self.stdout.write('Filter exists: Domain: {0}, Study Field: {1}, Label: {2}'.format(
+                        getattr(existing_filter.domain, 'code', 'None'),
+                        getattr(existing_filter.study_field, 'label', 'None'),
+                        existing_filter.label
+                    ))
+        except Exception as ex:
+            raise CommandError(str(ex))
 
         self.stdout.write('Added %s Study Field entries' %
                           (StudyField.objects.count() - n_study_fields))
@@ -251,5 +261,5 @@ class Command(BaseCommand):
                             print('    Study Variable {0}'.format(split_var.value))
                     else:
                         print('  Study Variable {0}: {1} - {2}'.format(('Created' if study_var_created else ' Exists'),
-                                                                 study_var.study_field.field_name,
-                                                                 study_var.value))
+                                                                       study_var.study_field.field_name,
+                                                                       study_var.value))
