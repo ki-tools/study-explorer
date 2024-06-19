@@ -164,6 +164,7 @@ Execute these commands on the Dokku server:
 - Link the database to the app: `dokku postgres:link se-<name>-db se-<name>`
 - Set the ENV
   variables: `dokku config:set se-<name> WEB_CONCURRENCY=4 ALLOWED_HOSTS=".kiglobalhealth.org,.hbgdki.org,.studyexplorer.io" SECRET_KEY="<your-secret-key> GTM_CONTAINER_ID=<your-google-tag-container-id>"`
+- Set the buildpack: `dokku buildpacks:set se-<name> https://github.com/heroku/heroku-buildpack-python.git#v233`
 - Set the domain: `dokku domains:add se-<name> <name>.studyexplorer.io`
 - Import the database export: `dokku postgres:import se-<name>-db < se-<name>.dump`
 - Install the SSL Certificates: `dokku letsencrypt se-<name>`
