@@ -217,49 +217,53 @@ class Command(BaseCommand):
         df = df.where((notnull(df)), None)
 
         for field_name in df.columns:
-            field_type = 'str'
-            study_field_name = field_name
-            set_field_type = False
-            if '::' in field_name:
-                study_field_name, field_type = field_name.split('::', maxsplit=1)
-                set_field_type = True
-            study_field_name = study_field_name.upper()
-            field_type = field_type.lower()
-            if print_study_field_details:
-                print('Processing Study Field: {0} ({1})'.format(study_field_name, field_type))
-            study_field, study_field_created = StudyField.objects.get_or_create(field_name=study_field_name)
-            if set_field_type:
-                study_field.field_type = field_type
-            study_field.save()
-            if print_study_field_details:
-                print('  Study Field {0}: {1} - {2} - {3}'.format(('Created' if study_field_created else ' Exists'),
-                                                                  study_field.field_name,
-                                                                  study_field.label,
-                                                                  study_field.field_type))
-            for study_id, value in df[field_name].to_dict().items():
-                study, study_created = Study.objects.get_or_create(study_id=study_id)
-                if print_study_details:
-                    print('  Study {0}: {1}'.format(('Created' if study_created else ' Exists'), study.study_id))
-                if value is None:
-                    continue
-                # NOTE: StudyVariable will take care of splitting lists types.
-                study_var_created = False
-                study_var = StudyVariable.objects.filter(study_field=study_field, value=str(value)).first()
-                if study_var:
-                    study_var.studies.add(study)
-                else:
-                    study_var = StudyVariable(study_field=study_field, value=str(value), with_studies=[study])
-                    study_var.save()
-                    study_var_created = True
-
-                if print_study_var_details:
-                    if study_var.split_variables:
-                        print('  Study Variable {0} - {1} split into multiple StudyVariables:'.format(
-                            study_var.study_field.field_name,
-                            study_var.value))
-                        for split_var in study_var.split_variables:
-                            print('    Study Variable {0}'.format(split_var.value))
+            try:
+                field_type = 'str'
+                study_field_name = field_name
+                set_field_type = False
+                if '::' in field_name:
+                    study_field_name, field_type = field_name.split('::', maxsplit=1)
+                    set_field_type = True
+                study_field_name = study_field_name.upper()
+                field_type = field_type.lower()
+                if print_study_field_details:
+                    print('Processing Study Field: {0} ({1})'.format(study_field_name, field_type))
+                study_field, study_field_created = StudyField.objects.get_or_create(field_name=study_field_name)
+                if set_field_type:
+                    study_field.field_type = field_type
+                study_field.save()
+                if print_study_field_details:
+                    print('  Study Field {0}: {1} - {2} - {3}'.format(('Created' if study_field_created else ' Exists'),
+                                                                      study_field.field_name,
+                                                                      study_field.label,
+                                                                      study_field.field_type))
+                for study_id, value in df[field_name].to_dict().items():
+                    study, study_created = Study.objects.get_or_create(study_id=study_id)
+                    if print_study_details:
+                        print('  Study {0}: {1}'.format(('Created' if study_created else ' Exists'), study.study_id))
+                    if value is None:
+                        continue
+                    # NOTE: StudyVariable will take care of splitting lists types.
+                    study_var_created = False
+                    study_var = StudyVariable.objects.filter(study_field=study_field, value=str(value)).first()
+                    if study_var:
+                        study_var.studies.add(study)
                     else:
-                        print('  Study Variable {0}: {1} - {2}'.format(('Created' if study_var_created else ' Exists'),
-                                                                       study_var.study_field.field_name,
-                                                                       study_var.value))
+                        study_var = StudyVariable(study_field=study_field, value=str(value), with_studies=[study])
+                        study_var.save()
+                        study_var_created = True
+
+                    if print_study_var_details:
+                        if study_var.split_variables:
+                            print('  Study Variable {0} - {1} split into multiple StudyVariables:'.format(
+                                study_var.study_field.field_name,
+                                study_var.value))
+                            for split_var in study_var.split_variables:
+                                print('    Study Variable {0}'.format(split_var.value))
+                        else:
+                            print('  Study Variable {0}: {1} - {2}'.format(
+                                ('Created' if study_var_created else ' Exists'),
+                                study_var.study_field.field_name,
+                                study_var.value))
+            except Exception as e:
+                raise CommandError('Field: {0}, Error: {1}'.format(field_name, str(e)))

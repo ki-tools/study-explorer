@@ -45,8 +45,15 @@ class ImportStudiesView(PermissionRequiredMixin, FormView):
         uploaded_file = form.files['studies_file']
         study_id_field = form['study_id_field'].value()
         keep_fields = form['keep_fields'].value()
-        call_command('load_studies', uploaded_file.temporary_file_path(),
-                     study_id_field=study_id_field, keep_fields=keep_fields)
+        try:
+            call_command('load_studies', uploaded_file.temporary_file_path(),
+                         study_id_field=study_id_field, keep_fields=keep_fields)
+        except Exception as e:
+            import traceback
+            print(traceback.format_exc())
+            form.add_error(None, str(e))
+            return super(ImportStudiesView, self).form_invalid(form)
+
         return super(ImportStudiesView, self).form_valid(form)
 
 
@@ -81,9 +88,16 @@ class ImportIDXView(PermissionRequiredMixin, FormView):
         study_id_field = form['study_id_field'].value()
         count_subj_field = form['count_subj_field'].value()
         count_obs_field = form['count_obs_field'].value()
-        call_command('load_idx',
-                     uploaded_file.temporary_file_path(),
-                     study_id_field=study_id_field,
-                     count_subj_field=count_subj_field,
-                     count_obs_field=count_obs_field)
+        try:
+            call_command('load_idx',
+                         uploaded_file.temporary_file_path(),
+                         study_id_field=study_id_field,
+                         count_subj_field=count_subj_field,
+                         count_obs_field=count_obs_field)
+        except Exception as e:
+            import traceback
+            print(traceback.format_exc())
+            form.add_error(None, str(e))
+            return super(ImportIDXView, self).form_invalid(form)
+
         return super(ImportIDXView, self).form_valid(form)
