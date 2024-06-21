@@ -245,6 +245,8 @@ class Command(BaseCommand):
                         continue
                     # NOTE: StudyVariable will take care of splitting lists types.
                     study_var_created = False
+                    if study_field.field_type in ['int', 'float']:
+                        value = str(value).replace(',', '')
                     study_var = StudyVariable.objects.filter(study_field=study_field, value=str(value)).first()
                     if study_var:
                         study_var.studies.add(study)
