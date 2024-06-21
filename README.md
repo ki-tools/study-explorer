@@ -146,8 +146,6 @@ proxy_send_timeout      3600;
 proxy_read_timeout      3600;
 ```
 
-- Change the `proxy_read_timeout` from `60s` to `60m` in `/home/dokku/app-name/nginx.config`.
-
 - Restart nginx: `sudo systemctl restart nginx`
 
 
@@ -167,6 +165,7 @@ Execute these commands on the Dokku server:
 - Set the Buildpack:
     - `dokku config:set se-<name> BUILDPACK_URL=https://github.com/ki-tools/heroku-buildpack-python-3.7.17.git`
 - Set the domain: `dokku domains:add se-<name> <name>.studyexplorer.io`
+- Set the nginx read timeout:: `dokku nginx:set se-<name> proxy-read-timeout 30m`
 - Import the database export: `dokku postgres:import se-<name>-db < se-<name>.dump`
 - Install the SSL Certificates: `dokku letsencrypt se-<name>`
 
